@@ -1,3 +1,4 @@
+use strict;
 use Test::More tests => 28;
 use Test::Exception;
 use Data::Dumper;
@@ -101,12 +102,11 @@ SKIP: {
       my $pos = $w3w->words2pos($words);
       like($pos, qr/^51.\d+,-0.19\d+$/, 'words2pos');
 
-      # L
       $pos = $w3w->words2pos('*libertytech');
       like($pos, qr/^51.\d+,-0.1\d+$/, 'words2pos');
 
     }
-
+    
 
     ##
     ## POSITION_TO_WORDS
@@ -139,7 +139,7 @@ SKIP: {
       $three_words_string_russian = join('.', @{$res_ru->{words}} );
       isnt(
         $three_words_string,
-        $three_words_string_ru,
+        $three_words_string_russian,
         'words_to_position - en vs russian'
       );
 
@@ -151,7 +151,6 @@ SKIP: {
     ##
     {
       my $res = $w3w->words_to_position($three_words_string);
-      # diag Dumper $res2;
 
 
 
@@ -179,9 +178,7 @@ SKIP: {
     ##
     {
         my $res = $w3w->oneword_available('*TestingThePerlModule');
-        # diag Dumper $res;
         ok($res->{available}, 'oneword_available: TestingThePerlModule');
-
     }
 
 

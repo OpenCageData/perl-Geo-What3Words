@@ -131,8 +131,8 @@ Tiny wrapper around words_to_position.
 =cut
 
 sub words2pos {
-  my ($class, %params) = @_;
-  my $res = $self->words_to_position(%params);
+  my ($self, @params) = @_;
+  my $res = $self->words_to_position(@params);
 
   if ( $res && ref($res) eq 'HASH' && exists($res->{position}) ){
     return $res->{position}->[0] . ',' . $res->{position}->[1];
@@ -159,8 +159,8 @@ Tiny wrapper around position_to_words.
 =cut
 
 sub pos2words {
-  my ($class, %params) = @_;
-  my $res = $self->position_to_words(%params);
+  my ($self, @params) = @_;
+  my $res = $self->position_to_words(@params);
 
   if ( $res && ref($res) eq 'HASH' && exists($res->{words}) ){
     return join('.', @{$res->{words}} );
@@ -371,7 +371,7 @@ sub _execute_query {
 
 
   local $Data::Dumper::Indent = 0;
-  $self->_log("POST" . $url . ' fields: ' . Dumper $rh_fields);
+  $self->_log("POST " . $url . ' fields: ' . Dumper $rh_fields);
   my $response = $self->{ua}->post($url, $rh_fields);
 
   if ( ! $response->is_success) {

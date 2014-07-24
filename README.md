@@ -5,12 +5,17 @@ Perl CPAN module to turn WGS84 coordinates into three words or OneWords and vice
 
 
 
+DEVELOPMENT
+
+	dzil clean
+	dzil build
+
+
+
 COPYRIGHT AND LICENCE
 
 Copyright 2014 Lokku Ltd <cpan@lokku.com>
 
-Parts taken from Geo::Coder::Multiple are copyright 2009 Alistair Francis
-<opensource@alizta.com>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10 or,

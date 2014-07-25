@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use URI;
 use LWP::UserAgent;
-use JSON::XS;
+use JSON;
 use Data::Dumper;
 use Net::Ping;
 use Net::Ping::External;

@@ -22,10 +22,10 @@ my $skip_online = $ENV{W3W_SKIP_ONLINE} ? 1 : 0;
 my $api_key = $ENV{W3W_API_KEY} || '6DPKOPUI';
 
 
-use_ok('Geo::WhatThreeWords');
+use_ok('Geo::What3Words');
 
 dies_ok {
-  Geo::WhatThreeWords->new();
+  Geo::What3Words->new();
 } 'missing key';
 
 
@@ -39,8 +39,8 @@ my $logging_callback = sub {
 };
 
 
-my $w3w = Geo::WhatThreeWords->new( key => $api_key, logging => $logging_callback );
-isa_ok($w3w, 'Geo::WhatThreeWords');
+my $w3w = Geo::What3Words->new( key => $api_key, logging => $logging_callback );
+isa_ok($w3w, 'Geo::What3Words');
 
 
 
@@ -183,7 +183,7 @@ SKIP: {
 
 
     {
-      my $w3w = Geo::WhatThreeWords->new( key => 'rubbish-key', logging => $logging_callback );
+      my $w3w = Geo::What3Words->new( key => 'rubbish-key', logging => $logging_callback );
       is( $w3w->pos2words('51.484463,-0.195405'), undef, 'invalid key');
     }
 

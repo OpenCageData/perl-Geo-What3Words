@@ -1,6 +1,6 @@
 # ABSTRACT: Turn WGS84 coordinates into three words or OneWords and vice-versa using w3w.co HTTP API
 
-package Geo::WhatThreeWords;
+package Geo::What3Words;
 use strict;
 use warnings;
 use URI;
@@ -25,7 +25,7 @@ You need to register to receive an API key.
 
 =head1 SYNOPSIS
 
-  my $w3w = Geo::WhatThreeWords->new();
+  my $w3w = Geo::What3Words->new();
 
   $w3w->pos2words('51.484463,-0.195405');
   # returns 'three.example.words'
@@ -36,7 +36,7 @@ You need to register to receive an API key.
   $w3w->words2pos('three.example.words');
   # returns '51.484463,-0.195405' (latitude,longitude)
 
-  $w3w->words2pos('*LibertyTech');
+  $w3w->words2pos('*libertytech');
   # returns '51.512573,-0.144879'
 
 
@@ -51,16 +51,16 @@ You need to register to receive an API key.
 
 Creates a new instance. The api key is required.
 
-  my $w3w = Geo::WhatThreeWords->new( key => 'your-api-key' );
-  my $w3w = Geo::WhatThreeWords->new( key => 'your-api-key', language => 'ru' );
+  my $w3w = Geo::What3Words->new( key => 'your-api-key' );
+  my $w3w = Geo::What3Words->new( key => 'your-api-key', language => 'ru' );
 
 For debugging you can either set logging or provide a callback.
 
-  my $w3w = Geo::WhatThreeWords->new( key => 'your-api-key', logging => 1 );
+  my $w3w = Geo::What3Words->new( key => 'your-api-key', logging => 1 );
   # will print debugging output to STDOUT
 
   my $callback = sub { my $msg = shift; $my_log4perl_logger->info($msg) };
-  my $w3w = Geo::WhatThreeWords->new( key => 'your-api-key', logging => $callback );
+  my $w3w = Geo::What3Words->new( key => 'your-api-key', logging => $callback );
   # will log with log4perl.
 
 =cut
@@ -76,7 +76,7 @@ sub new {
   $self->{logging}          = $params{logging};
 
   $self->{ua} = LWP::UserAgent->new;
-  $self->{ua}->agent('Perl Geo::WhatThreeWords');
+  $self->{ua}->agent('Perl Geo::What3Words');
 
   return bless($self,$class);
 }
@@ -150,7 +150,7 @@ sub words2pos {
 
 Tiny wrapper around position_to_words.
 
-  $w3w->pos2words('51.484463,-0.195405');
+  $w3w->pos2words('51.484463,-0.195405'); # latitude,longitude
   # returns 'three.example.words'
 
   $w3w->pos2words('51.484463,-0.195405', 'ru');
@@ -192,7 +192,7 @@ sub valid_words {
   my $self = shift;
   my $words = shift;
 
-  ## Translating the PHP regular expression w3w used in their
+  ## Translating the PHP regular expression w3w uses in their
   ## documentation
   ## http://perldoc.perl.org/perlunicode.html#Unicode-Character-Properties
   ## http://php.net/manual/en/reference.pcre.pattern.differences.php
@@ -301,7 +301,7 @@ Retuns a list of language codes and names.
   #                        'code' => 'en'
   #                      },
   #                      {
-  #                        'name_display' => "Espa\x{f1}ol",
+  #                        'name_display' => "Español",
   #                        'code' => 'es'
   #                      },
   # ...
@@ -394,10 +394,10 @@ sub _log {
 
   if ( ref($self->{logging}) eq 'CODE' ){
     my $lc = $self->{logging};
-    &$lc("Geo::WhatThreeWords -- " . $message);
+    &$lc("Geo::What3Words -- " . $message);
   } 
   else {
-    print "Geo::WhatThreeWords -- " . $message . "\n";
+    print "Geo::What3Words -- " . $message . "\n";
   }
   return
 }

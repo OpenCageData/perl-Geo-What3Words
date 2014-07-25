@@ -8,8 +8,16 @@ Perl CPAN module to turn WGS84 coordinates into three words or OneWords and vice
 DEVELOPMENT
 
 	dzil clean
+
+	# for running the test-suite either
+	PERLLIB=./lib prove -r t/
+	# or
+	dzil test
+
 	dzil build
 
+	# git push, upload to CPAN
+	dzil release
 
 
 COPYRIGHT AND LICENCE

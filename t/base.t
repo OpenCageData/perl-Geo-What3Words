@@ -78,7 +78,7 @@ SKIP: {
 
 
       ## just in case the hardcoded key gets blocked 
-      if ( $res && ref($res) eq 'HASH' && $res->{error} eq 'X1' ){
+      if ( $res && ref($res) eq 'HASH' && exists($res->{error}) && $res->{error} eq 'X1' ){
         skip 'API key is invalid', 15;
       }
 

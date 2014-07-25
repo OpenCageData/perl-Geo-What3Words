@@ -9,10 +9,8 @@ DEVELOPMENT
 
 	dzil clean
 
-	# for running the test-suite either
-	PERLLIB=./lib prove -r t/
-	# or
-	dzil test
+	# running the test-suite
+	TEST_AUTHOR=1 PERLLIB=./lib prove -r t/
 
 	dzil build
 

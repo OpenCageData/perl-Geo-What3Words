@@ -19,7 +19,7 @@ binmode $builder->todo_output,    ":utf8";
 
 
 my $skip_online = $ENV{W3W_SKIP_ONLINE} ? 1 : 0;
-my $api_key = $ENV{W3W_API_KEY} || '6DPKOPUI';
+my $api_key = $ENV{W3W_API_KEY} || 'B6Z417NE';
 
 
 use_ok('Geo::What3Words');

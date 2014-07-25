@@ -18,8 +18,8 @@ Each square has been given a 3 word address comprised of 3 words from the dictio
 This module calls their API (http://what3words.com/api/reference) to convert coordinates into
 those 3 word addresses and back.
 
-You need to register to receive an API key.
-
+You need to sign up at http://what3words.com/login and then register for an API key
+at http://what3words.com/api/signup”
 
 
 

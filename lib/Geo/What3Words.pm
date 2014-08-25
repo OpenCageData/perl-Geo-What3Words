@@ -1,6 +1,7 @@
 # ABSTRACT: Turn WGS84 coordinates into three words or OneWords and vice-versa using w3w.co HTTP API
 
 package Geo::What3Words;
+
 use strict;
 use warnings;
 use URI;

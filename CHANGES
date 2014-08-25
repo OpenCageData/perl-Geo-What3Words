@@ -1,6 +1,9 @@
 Revision history for Perl module Geo::What3Words.
 
-1.0.1	2014-08-5
+1.0.2	2014-08-25
+		- set the github repository (useful for metapan), thanks to szabgab
+
+1.0.1	2014-08-25
 		- set the $VERSION automatically during build
 
 1.0     2014-07-25

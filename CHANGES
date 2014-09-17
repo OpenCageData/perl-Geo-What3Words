@@ -1,5 +1,8 @@
 Revision history for Perl module Geo::What3Words.
 
+1.0.5   2014-09-17
+        - Remove default lang param
+
 1.0.4	2014-08-29
 		- also set MetaProvides in meta.yml
 

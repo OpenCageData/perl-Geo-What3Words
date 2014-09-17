@@ -73,7 +73,7 @@ sub new {
   my $self = {};
   $self->{api_endpoint}     = $params{api_endpoint} || 'http://api.what3words.com/';
   $self->{key}              = $params{key}      || die "API key not set";
-  $self->{language}         = $params{language} || 'en';
+  $self->{language}         = $params{language};
   $self->{logging}          = $params{logging};
 
   $self->{ua} = LWP::UserAgent->new;
@@ -369,6 +369,7 @@ sub _execute_query {
       key    => $self->{key},
       %$rh_params
   };
+  delete $rh_fields->{lang} if !$rh_fields->{lang};
 
 
   local $Data::Dumper::Indent = 0;

@@ -426,9 +426,11 @@ sub _log {
 
 =head1 INSTALLATION
 
-During installation the test suite will skip any API calls if you're
-not online (Net::Ping). If that fails you can also try to set the
-environment variable 'W3W_SKIP_ONLINE'.
+The test suite will use pre-recorded API responses. If you suspect something
+changed in the API you can force the test suite to use live requests with
+your API key
+
+    PERLLIB=./lib W3W_RECORD_REQUESTS=1 W3W_API_KEY=<your key> perl t/base.t
 
 =cut
 

@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Connection: close
+Date: Thu, 18 Sep 2014 11:42:25 GMT
+Pragma: no-cache
+Server: nginx/1.6.1
+Vary: Accept-Encoding
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+Client-Response-Num: 1
+Client-Transfer-Encoding: chunked
+Set-Cookie: id=ij4aq9eic873e61kn5ccup3a86; expires=Thu, 18-Sep-2014 23:42:25 GMT; path=/; HttpOnly
+X-Powered-By: PHP/5.4.31
+
+{"words":["prom","cape","pump"],"position":[51.484463,-0.195405],"language":"en"}

@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Connection: close
+Date: Thu, 18 Sep 2014 11:42:25 GMT
+Pragma: no-cache
+Server: nginx/1.6.1
+Vary: Accept-Encoding
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+Client-Response-Num: 1
+Client-Transfer-Encoding: chunked
+Set-Cookie: id=n2423mpp1iv1anohf2fn8vt900; expires=Thu, 18-Sep-2014 23:42:25 GMT; path=/; HttpOnly
+X-Powered-By: PHP/5.4.31
+
+{"words":["\u043f\u0438\u0442\u043e\u043c\u0435\u0446","\u0448\u0443\u0442\u0438\u0442\u044c","\u043d\u0430\u043c\u0435\u0440\u0435\u043d\u043d\u043e"],"position":[51.484463,-0.195405],"language":"ru"}

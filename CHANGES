@@ -1,5 +1,9 @@
 Revision history for Perl module Geo::What3Words.
 
+1.0.6   2014-09-18
+		- change test-suite to use recorded HTTP responses instead of
+		   calling the W3W API live
+
 1.0.5   2014-09-17
         - Remove default lang param
 

@@ -76,8 +76,12 @@ sub new {
   $self->{language}         = $params{language};
   $self->{logging}          = $params{logging};
 
-  $self->{ua} = LWP::UserAgent->new;
-  $self->{ua}->agent('Perl Geo::What3Words');
+  ## _ua is used for testing. But could also be used to
+  ## set proxies or such
+  $self->{ua} = $params{ua} || LWP::UserAgent->new;
+
+  my $version  = $Geo::What3Words::VERSION || '';
+  $self->{ua}->agent("Perl Geo::What3Words $version");
 
   return bless($self,$class);
 }

@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Connection: close
+Date: Thu, 18 Sep 2014 11:42:26 GMT
+Pragma: no-cache
+Server: nginx/1.6.1
+Vary: Accept-Encoding
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+Client-Response-Num: 1
+Client-Transfer-Encoding: chunked
+Set-Cookie: id=vdsrss2ihlkk1in944b7hmn637; expires=Thu, 18-Sep-2014 23:42:26 GMT; path=/; HttpOnly
+X-Powered-By: PHP/5.4.31
+
+{"available":1,"message":"Ihr OneWord ist noch nicht vergeben."}

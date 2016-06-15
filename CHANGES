@@ -1,5 +1,8 @@
 Revision history for Perl module Geo::What3Words.
 
+2.0.1   2016-06-15
+    - forgot to add Test::Warn as dependency
+
 2.0.0   2016-06-15
     - use what3words API version 2
     - remove methods related to onewords

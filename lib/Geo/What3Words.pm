@@ -274,37 +274,37 @@ sub words_to_position {
 Returns a more verbose response than pos2words.
 
   $w3w->position_to_words('51.484463,-0.195405')
-  {
-    "crs": {
-      "type": "link",
-      "properties": {
-        "href": "http://spatialreference.org/ref/epsg/4326/ogcwkt/",
-        "type": "ogcwkt"
-      }
-    },
-    "words": "prom.cape.pump",
-    "bounds": {
-      "southwest": {
-        "lng": "-0.195426",
-        "lat": "51.484449"
-      },
-      "northeast": {
-        "lng": "-0.195383",
-        "lat": "51.484476"
-      }
-    },
-    "geometry": {
-      "lng": "-0.195405",
-      "lat": "51.484463"
-    },
-    "language": "en",
-    "map": "http://w3w.co/prom.cape.pump",
-    "status": {
-      "status": 200,
-      "reason": "OK"
-    },
-    "thanks": "Thanks from all of us at index.home.raft for using a what3words API"
-  }
+  # {
+  #   "crs": {
+  #     "type": "link",
+  #     "properties": {
+  #       "href": "http://spatialreference.org/ref/epsg/4326/ogcwkt/",
+  #       "type": "ogcwkt"
+  #     }
+  #   },
+  #   "words": "prom.cape.pump",
+  #   "bounds": {
+  #     "southwest": {
+  #       "lng": "-0.195426",
+  #       "lat": "51.484449"
+  #     },
+  #     "northeast": {
+  #       "lng": "-0.195383",
+  #       "lat": "51.484476"
+  #     }
+  #   },
+  #   "geometry": {
+  #     "lng": "-0.195405",
+  #     "lat": "51.484463"
+  #   },
+  #   "language": "en",
+  #   "map": "http://w3w.co/prom.cape.pump",
+  #   "status": {
+  #     "status": 200,
+  #     "reason": "OK"
+  #   },
+  #   "thanks": "Thanks from all of us at index.home.raft for using a what3words API"
+  # }
 
 =cut
 

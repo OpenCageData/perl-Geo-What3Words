@@ -1,5 +1,9 @@
 Revision history for Perl module Geo::What3Words.
 
+2.0.0   2016-06-15
+    - use what3words API version 2
+    - remove methods related to onewords
+
 1.0.6   2014-09-18
 		- change test-suite to use recorded HTTP responses instead of
 		   calling the W3W API live

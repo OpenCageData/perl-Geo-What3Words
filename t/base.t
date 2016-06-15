@@ -1,6 +1,7 @@
 use strict;
-use Test::More tests => 28;
+use Test::More tests => 27;
 use Test::Exception;
+use Test::Warn;
 use Data::Dumper;
 use List::Util qw(first);
 use Test::LWP::Recorder;
@@ -17,7 +18,6 @@ binmode $builder->failure_output, ":utf8";
 binmode $builder->todo_output,    ":utf8";
 
 
-use_ok('Geo::What3Words');
 
 
 
@@ -45,18 +45,22 @@ my $ua = Test::LWP::Recorder->new({
     filter_header => [qw(Client-Peer Expires Client-Date Cache-Control)],
 });
 
+use Geo::What3Words;
 
 
-## Missing of invalid keys
+
+## Missing API key
 ##
 dies_ok {
   Geo::What3Words->new( logging => $logging_callback);
 } 'missing key';
 
-{
+## Invalid API key
+##
+warning_like {
   my $w3w = Geo::What3Words->new( key => 'rubbish-key', ua => $ua, logging => $logging_callback );
   is( $w3w->pos2words('1,2'), undef, 'invalid key');
-}
+} qr/Unauthorized/, 'got warning';
 
 
 
@@ -67,47 +71,7 @@ isa_ok($w3w, 'Geo::What3Words');
 
 
 
-## These methods don't access the HTTP API
-##
-{
 
-  is( $w3w->valid_words('abc.def.ghi'),     3, 'valid_words - valid' );
-  is( $w3w->valid_words('abcdef.ghi'),      0, 'valid_words - only two' );
-  is( $w3w->valid_words('abc.def.ghi.jkl'), 0, 'valid_words - too many' );
-  is( $w3w->valid_words('Abc.def.ghi'),     0, 'valid_words - not all lowercase' );
-  is( $w3w->valid_words(''),                0, 'valid_words - empty' );
-  is( $w3w->valid_words(),                  0, 'valid_words - undef' );
-
-  is( $w3w->valid_words('meyal.şifalı.döşeme'),   3, 'valid_words - valid Turkish utf8' );
-  is( $w3w->valid_words('диета.новшество.компаньон'),   3, 'valid_words - valid Russian utf8' );
-  is( $w3w->valid_words('Mосква.def.ghi'),  0, 'valid_words - not all lowercase utf8' );
-
-  is( $w3w->valid_words('*exampleword'),    1, 'valid_words - OneWord' );
-
-
-}
-
-
-
-
-##
-## GET_LANGUAGES
-##
-{
-  my $res = $w3w->get_languages();
-
-
-  ## just in case the hardcoded key gets blocked 
-  if ( $res && ref($res) eq 'HASH' && exists($res->{error}) && $res->{error} eq 'X1' ){
-    skip 'API key is invalid', 15;
-  }
-
-
-  ok( scalar(@{$res->{languages}}) > 1, 'get_languages - at least one');
-
-  my $ru = first { $_->{'code'} eq 'ru'} @{$res->{languages}};
-  is($ru->{name_display}, 'Русский', 'get_languages - name encoding in utf8');
-}
 
 
 
@@ -117,13 +81,14 @@ isa_ok($w3w, 'Geo::What3Words');
 
 {
   my $words = $w3w->pos2words('51.484463,-0.195405');
-  like($words, qr/^(\w+)\.(\w+)\.(\w+)$/, 'pos2words');
+  ok( $w3w->valid_words_format($words), 'pos2words');
 
   my $pos = $w3w->words2pos($words);
   like($pos, qr/^51.\d+,-0.19\d+$/, 'words2pos');
 
-  $pos = $w3w->words2pos('*libertytech');
-  like($pos, qr/^51.\d+,-0.1\d+$/, 'words2pos');
+
+  is ( $w3w->pos2words('invalid,coords'), undef, 'pos2words - invalid input' );
+  is ( $w3w->words2pos('does.not.exist'), undef, 'words2pos - invalid input' );
 
 }
 
@@ -144,23 +109,22 @@ my $three_words_string_russian;
 
   is($res->{language}, 'en', 'words_to_position - language');
   is_deeply(
-    $res->{position},
+    [ $res->{geometry}->{lat}, $res->{geometry}->{lng} ],
     [ $lat, $lng ],
     'words_to_position - position'
   );
-  is( scalar( @{$res->{words}}), 3, 'words_to_position - got 3 words');
 
-  $three_words_string = join('.', @{$res->{words}} );
+  $three_words_string = $res->{words};
+  ok($w3w->valid_words_format($three_words_string), 'words_to_position - got 3 words');
 
-
-
-  ## now Russian
+  ## now Russian, питомец.шутить.намеренно
   my $res_ru = $w3w->position_to_words($lat . ',' . $lng, 'ru');
-  $three_words_string_russian = join('.', @{$res_ru->{words}} );
+  $three_words_string_russian = $res_ru->{words};
+
   isnt(
     $three_words_string,
     $three_words_string_russian,
-    'words_to_position - en vs russian'
+    'words_to_position - english vs russian'
   );
 
 }
@@ -172,18 +136,15 @@ my $three_words_string_russian;
 {
   my $res = $w3w->words_to_position($three_words_string);
 
-
-
   is($res->{language}, 'en', 'position_to_words - language');
   is_deeply(
-    $res->{position},
+    [ $res->{geometry}->{lat}, $res->{geometry}->{lng} ],
     [ $lat, $lng ],
     'position_to_words - position'
   );
-  is($res->{type}, '3 words', 'position_to_words - type');
-  is_deeply(
+  is(
     $res->{words},
-    [ split('\.', $three_words_string) ],
+    $three_words_string,
     'position_to_words - words'
   );
 
@@ -192,13 +153,34 @@ my $three_words_string_russian;
 
 
 
-
 ##
-## ONEWORD_AVAILABLE
+## GET_LANGUAGES
 ##
 {
-    my $res = $w3w->oneword_available('*TestingThePerlModule');
-    ok($res->{available}, 'oneword_available: TestingThePerlModule');
+  my $res = $w3w->get_languages();
+
+  ok( scalar(@{$res->{languages}}) > 1, 'get_languages - at least one');
+
+  my $rh_lang = first { $_->{'code'} eq 'ru'} @{$res->{languages}};
+  like($rh_lang->{name}, qr/^Russian/, 'get_languages - name');
+  like($rh_lang->{native_name}, qr/^Русский/, 'get_languages - name encoded in utf8');
+}
+
+
+
+## These methods don't access the HTTP API
+##
+{
+  is( $w3w->valid_words_format('abc.def.ghi'),     1, 'valid_words_format - valid' );
+  is( $w3w->valid_words_format('abcdef.ghi'),      0, 'valid_words_format - only two' );
+  is( $w3w->valid_words_format('abc.def.ghi.jkl'), 0, 'valid_words_format - too many' );
+  is( $w3w->valid_words_format('Abc.def.ghi'),     0, 'valid_words_format - not all lowercase' );
+  is( $w3w->valid_words_format(''),                0, 'valid_words_format - empty' );
+  is( $w3w->valid_words_format(),                  0, 'valid_words_format - undef' );
+
+  is( $w3w->valid_words_format('meyal.şifalı.döşeme'),   1, 'valid_words_format - valid Turkish utf8' );
+  is( $w3w->valid_words_format('диета.новшество.компаньон'),   1, 'valid_words_format - valid Russian utf8' );
+  is( $w3w->valid_words_format('Mосква.def.ghi'),  0, 'valid_words_format - not all lowercase utf8' );
 }
 
 

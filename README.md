@@ -1,7 +1,7 @@
 perl-Geo-What3Words
 =======================
 
-Perl CPAN module to turn WGS84 coordinates into three words or OneWords and vice-versa using w3w.co HTTP API
+Perl CPAN module to turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API
 
 
 
@@ -20,7 +20,7 @@ DEVELOPMENT
 
 COPYRIGHT AND LICENCE
 
-Copyright 2014 Lokku Ltd <cpan@lokku.com>
+Copyright 2016 OpenCage Data Ltd <cpan@opencagedata.com>
 
 
 This library is free software; you can redistribute it and/or modify

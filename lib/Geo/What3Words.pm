@@ -1,4 +1,5 @@
-# ABSTRACT: Turn WGS84 coordinates into three words or OneWords and vice-versa using w3w.co HTTP API
+# ABSTRACT: turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API
+
 
 package Geo::What3Words;
 
@@ -6,6 +7,7 @@ use strict;
 use warnings;
 use URI;
 use LWP::UserAgent;
+use LWP::Protocol::https;
 use JSON;
 use Data::Dumper;
 use Net::Ping;
@@ -13,11 +15,15 @@ use Net::Ping::External;
 
 =head1 DESCRIPTION
 
-what3words (http://what3words.com/) divides the world into 57 trillion squares of 3 metres x 3 metres.
-Each square has been given a 3 word address comprised of 3 words from the dictionary.
+what3words (http://what3words.com/) divides the world into 57 trillion squares
+of 3 metres x 3 metres. Each square has been given a 3 word address comprised
+of 3 words from the dictionary.
 
-This module calls their API (http://what3words.com/api/reference) to convert coordinates into
-those 3 word addresses and back.
+This module calls API version 2 (https://docs.what3words.com/api/v2/) to convert
+coordinates into those 3 word addresses (forward) and 3 words into coordinates
+(reverse).
+
+Version 1 is deprecated and will stop working December 2016.
 
 You need to sign up at http://what3words.com/login and then register for an API key
 at http://what3words.com/api/signup”
@@ -37,12 +43,8 @@ at http://what3words.com/api/signup”
   $w3w->words2pos('three.example.words');
   # returns '51.484463,-0.195405' (latitude,longitude)
 
-  $w3w->words2pos('*libertytech');
-  # returns '51.512573,-0.144879'
-
 
 =cut
-
 
 
 
@@ -71,7 +73,7 @@ sub new {
   my ($class, %params) = @_;
 
   my $self = {};
-  $self->{api_endpoint}     = $params{api_endpoint} || 'http://api.what3words.com/';
+  $self->{api_endpoint}     = $params{api_endpoint} || 'https://api.what3words.com/v2/';
   $self->{key}              = $params{key}      || die "API key not set";
   $self->{language}         = $params{language};
   $self->{logging}          = $params{logging};
@@ -130,8 +132,8 @@ Tiny wrapper around words_to_position.
   $w3w->words2pos('three.example.words');
   # returns '51.484463,-0.195405' (latitude,longitude)
 
-  $w3w->words2pos('*libertytech');
-  # returns '51.512573,-0.144879'
+  $w3w->words2pos('does.not.exist');
+  # returns undef
 
 =cut
 
@@ -139,8 +141,8 @@ sub words2pos {
   my ($self, @params) = @_;
   my $res = $self->words_to_position(@params);
 
-  if ( $res && ref($res) eq 'HASH' && exists($res->{position}) ){
-    return $res->{position}->[0] . ',' . $res->{position}->[1];
+  if ( $res && ref($res) eq 'HASH' && exists($res->{geometry}) ){
+    return $res->{geometry}->{lat} . ',' . $res->{geometry}->{lng};
   }
   return;
 }
@@ -161,6 +163,10 @@ Tiny wrapper around position_to_words.
   $w3w->pos2words('51.484463,-0.195405', 'ru');
   # returns 'три.пример.слова'
 
+  $w3w->pos2words('invalid,coords');
+  # returns undef
+
+
 =cut
 
 sub pos2words {
@@ -168,7 +174,7 @@ sub pos2words {
   my $res = $self->position_to_words(@params);
 
   if ( $res && ref($res) eq 'HASH' && exists($res->{words}) ){
-    return join('.', @{$res->{words}} );
+    return $res->{words};
   }
   return;
 }
@@ -180,20 +186,17 @@ sub pos2words {
 
 
 
-=method valid_words
+=method valid_words_format
 
-Returns 3 if the string looks like three words, 1 if it looks like a OneWord.
-Returns 0 otherwise.
+Returns 1 if the string looks like three words, 0 otherwise. Does
+not call the remote API.
 
-  $w3w->valid_words('one.two.three');
-  # returns 3
-
-  $w3w->valid_words('*one-two12');
-  # return 1
+  $w3w->valid_words_format('one.two.three');
+  # returns 1
 
 =cut
 
-sub valid_words {
+sub valid_words_format {
   my $self = shift;
   my $words = shift;
 
@@ -202,15 +205,9 @@ sub valid_words {
   ## http://perldoc.perl.org/perlunicode.html#Unicode-Character-Properties
   ## http://php.net/manual/en/reference.pcre.pattern.differences.php
   return 0 unless $words;
-
-
-  return 3 if ($words =~ m/^(\p{Lower}+)\.(\p{Lower}+)\.(\p{Lower}+)$/ );
-  return 1 if ($words =~ m/^\*[\p{Lower}\-0-9]{6,31}$/ );
+  return 1 if ($words =~ m/^(\p{Lower}+)\.(\p{Lower}+)\.(\p{Lower}+)$/ );
   return 0;
 }
-
-
-
 
 
 
@@ -221,19 +218,37 @@ sub valid_words {
 Returns a more verbose response than words2pos.
 
   $w3w->words_to_position('prom.cape.pump');
-  #   {
-  #      'language' => 'en',
-  #      'position' => [
-  #                      '51.484463',
-  #                      '-0.195405'
-  #                    ],
-  #      'type' => '3 words',
-  #      'words' => [
-  #                   'prom',
-  #                   'cape',
-  #                   'pump'
-  #                 ]
+  # {
+  #   "crs": {
+  #     "type": "link",
+  #     "properties": {
+  #       "href": "http://spatialreference.org/ref/epsg/4326/ogcwkt/",
+  #       "type": "ogcwkt"
+  #     }
   #   },
+  #   "words": "prom.cape.pump",
+  #   "bounds": {
+  #     "southwest": {
+  #       "lng": "-0.195426",
+  #       "lat":"51.484449"
+  #     },
+  #     "northeast": {
+  #       "lng": "-0.195383",
+  #       "lat": "51.484476"
+  #     }
+  #   },
+  #   "geometry": {
+  #     "lng": "-0.195405",
+  #     "lat": "51.484463"
+  #   },
+  #   "language": "en",
+  #   "map": "http://w3w.co/prom.cape.pump",
+  #   "status": {
+  #     "status": 200,
+  #     "reason": "OK"
+  #   },
+  #   "thanks": "Thanks from all of us at index.home.raft for using a what3words API"
+  # }
 
 =cut
 
@@ -242,7 +257,7 @@ sub words_to_position {
   my $words = shift;
   my $language = shift || $self->{language};
 
-  return $self->_execute_query('w3w', {string => $words, lang => $language });
+  return $self->_query_remote_api('forward', {addr => $words, lang => $language });
 }
 
 
@@ -259,18 +274,37 @@ sub words_to_position {
 Returns a more verbose response than pos2words.
 
   $w3w->position_to_words('51.484463,-0.195405')
-  # {
-  #    'language' => 'en',
-  #    'position' => [
-  #                    '51.484463',
-  #                    '-0.195405'
-  #                  ],
-  #    'words' => [
-  #                 'prom',
-  #                 'cape',
-  #                 'pump'
-  #               ]
-  # }
+  {
+    "crs": {
+      "type": "link",
+      "properties": {
+        "href": "http://spatialreference.org/ref/epsg/4326/ogcwkt/",
+        "type": "ogcwkt"
+      }
+    },
+    "words": "prom.cape.pump",
+    "bounds": {
+      "southwest": {
+        "lng": "-0.195426",
+        "lat": "51.484449"
+      },
+      "northeast": {
+        "lng": "-0.195383",
+        "lat": "51.484476"
+      }
+    },
+    "geometry": {
+      "lng": "-0.195405",
+      "lat": "51.484463"
+    },
+    "language": "en",
+    "map": "http://w3w.co/prom.cape.pump",
+    "status": {
+      "status": 200,
+      "reason": "OK"
+    },
+    "thanks": "Thanks from all of us at index.home.raft for using a what3words API"
+  }
 
 =cut
 
@@ -279,7 +313,7 @@ sub position_to_words {
   my $position = shift;
   my $language = shift || $self->{language};
 
-  return $self->_execute_query('position', {position => $position, lang => $language });
+  return $self->_query_remote_api('reverse', {coords => $position, lang => $language });
 }
 
 
@@ -298,15 +332,18 @@ Retuns a list of language codes and names.
   # {
   #     'languages' => [
   #                      {
-  #                        'name_display' => 'Deutsch',
+  #                        'name' => 'German',
+  #                        'name_native' => 'Deutsch',
   #                        'code' => 'de'
   #                      },
   #                      {
-  #                        'name_display' => 'English',
+  #                        'name' => 'English',
+  #                        'name_native' => 'English',
   #                        'code' => 'en'
   #                      },
   #                      {
-  #                        'name_display' => "Español",
+  #                        'name' => "Spanish",
+  #                        'name_native' => "Español",
   #                        'code' => 'es'
   #                      },
   # ...
@@ -317,7 +354,7 @@ sub get_languages {
   my $self = shift;
   my $position = shift;
 
-  return $self->_execute_query('get-languages');
+  return $self->_query_remote_api('languages');
 }
 
 
@@ -329,24 +366,10 @@ sub get_languages {
 
 
 
-=method oneword_available
-
-Checks if a OneWord is available
-
-  $w3w->oneword_available('helloworld');
-  # {
-  #   'message' => 'Your OneWord is available',
-  #   'available' => 1
-  # }
-
-=cut
 
 sub oneword_available {
-  my $self = shift;
-  my $word = shift;
-  my $language = shift || $self->{language};
-
-  return $self->_execute_query('oneword-available', {word => $word, lang => $language });
+  warn 'deprecated method: oneword_available';
+  return;
 }
 
 
@@ -360,29 +383,31 @@ sub oneword_available {
 
 
 
-
-sub _execute_query {
+sub _query_remote_api {
   my $self        = shift;
   my $method_name = shift;
   my $rh_params   = shift || {};
 
-
-  my $url = URI->new($self->{api_endpoint} . $method_name);
-
   my $rh_fields = {
+    a=> 1,
       key    => $self->{key},
+      format => 'json',
       %$rh_params
   };
-  delete $rh_fields->{lang} if !$rh_fields->{lang};
+  foreach my $key (keys %$rh_fields){
+    delete $rh_fields->{$key} if (!defined($rh_fields->{$key}));
+  }
 
+  my $uri = URI->new($self->{api_endpoint} . $method_name);
+  $uri->query_form( $rh_fields );
+  my $url = $uri->as_string;
 
-  local $Data::Dumper::Indent = 0;
-  $self->_log("POST " . $url . ' fields: ' . Dumper $rh_fields);
-  my $response = $self->{ua}->post($url, $rh_fields);
+  $self->_log("GET $url");
+  my $response = $self->{ua}->get($url);
 
   if ( ! $response->is_success) {
-    warn "got no response from $url";
-    $self->_log("got no response from $url");
+    warn "got failed response from $url: " . $response->status_line;
+    $self->_log("got failed response from $url: " . $response->status_line);
     return;
   }
 
@@ -408,20 +433,6 @@ sub _log {
   return
 }
 
-# convert '$lat,$lng', [$lat,$lng], {lat=>$lat,lng=>$lng} to
-# a string.
-# sub _position_to_string {
-#   my $value = shift;
-#   if ( my $type = ref($value) ){
-#     if ( $type eq 'ARRAY' ){
-#       return $value->[0] . ',' . $value->[1]
-#     }
-#     if ( $type eq 'HASH' ){
-#       return $value->{'lat'} . ',' . $value->{'lng'}
-#     }
-#   }
-#   return $value;
-# }
 
 
 =head1 INSTALLATION

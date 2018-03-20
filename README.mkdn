@@ -1,3 +1,6 @@
+
+[![Build Status](https://travis-ci.org/OpenCageData/perl-Geo-What3Words.svg?branch=master)](https://travis-ci.org/OpenCageData/perl-Geo-What3Words)
+
 # NAME
 
 Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API

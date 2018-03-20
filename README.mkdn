@@ -1,5 +1,6 @@
 
 [![Build Status](https://travis-ci.org/OpenCageData/perl-Geo-What3Words.svg?branch=master)](https://travis-ci.org/OpenCageData/perl-Geo-What3Words)
+[![Kritika Analysis Status](https://kritika.io/users/freyfogle/repos/2312190081510289/heads/master/status.svg)](https://kritika.io/users/freyfogle/repos/2312190081510289/heads/master/)
 
 # NAME
 

@@ -316,14 +316,6 @@ sub position_to_words {
   return $self->_query_remote_api('reverse', {coords => $position, lang => $language });
 }
 
-
-
-
-
-
-
-
-
 =method get_languages
 
 Retuns a list of language codes and names.
@@ -357,31 +349,10 @@ sub get_languages {
   return $self->_query_remote_api('languages');
 }
 
-
-
-
-
-
-
-
-
-
-
 sub oneword_available {
   warn 'deprecated method: oneword_available';
   return;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 sub _query_remote_api {
   my $self        = shift;
@@ -417,7 +388,6 @@ sub _query_remote_api {
   return decode_json($json);
 }
 
-
 sub _log {
   my $self    = shift;
   my $message = shift;
@@ -426,14 +396,12 @@ sub _log {
   if ( ref($self->{logging}) eq 'CODE' ){
     my $lc = $self->{logging};
     &$lc("Geo::What3Words -- " . $message);
-  } 
+  }
   else {
     print "Geo::What3Words -- " . $message . "\n";
   }
-  return
+  return;
 }
-
-
 
 =head1 INSTALLATION
 
@@ -444,6 +412,5 @@ your API key
     PERLLIB=./lib W3W_RECORD_REQUESTS=1 W3W_API_KEY=<your key> perl t/base.t
 
 =cut
-
 
 1;

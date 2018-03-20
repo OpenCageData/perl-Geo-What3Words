@@ -7,20 +7,15 @@ use List::Util qw(first);
 use Test::LWP::Recorder;
 
 use utf8; # this file is written in utf8
-binmode STDOUT, ':utf8';
-binmode STDERR, ':utf8';
+binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
 
 # nicer output for diag and failures, see
 # http://perldoc.perl.org/Test/More.html#CAVEATS-and-NOTES
 my $builder = Test::More->builder;
-binmode $builder->output,         ":utf8";
-binmode $builder->failure_output, ":utf8";
-binmode $builder->todo_output,    ":utf8";
-
-
-
-
-
+binmode $builder->output,         ":encoding(UTF-8)";
+binmode $builder->failure_output, ":encoding(UTF-8)";
+binmode $builder->todo_output,    ":encoding(UTF-8)";
 
 ## Make sure verbose messages go to the test output instead of STDOUT
 ## And with 'note' instead of 'diag' the output of test summaries stays

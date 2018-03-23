@@ -1,6 +1,7 @@
 
 [![Build Status](https://travis-ci.org/OpenCageData/perl-Geo-What3Words.svg?branch=master)](https://travis-ci.org/OpenCageData/perl-Geo-What3Words)
 [![Kritika Analysis Status](https://kritika.io/users/freyfogle/repos/2312190081510289/heads/master/status.svg)](https://kritika.io/users/freyfogle/repos/2312190081510289/heads/master/)
+[![CPAN](https://img.shields.io/cpan/v/Geo-What3Words.svg?style=flat-square)](https://metacpan.org/pod/Geo::What3Words)
 
 # NAME
 

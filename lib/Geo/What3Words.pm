@@ -8,10 +8,12 @@ use warnings;
 use URI;
 use LWP::UserAgent;
 use LWP::Protocol::https;
-use JSON;
+use JSON::XS;
 use Data::Dumper;
 use Net::Ping;
 use Net::Ping::External;
+use Encode;
+my $JSONXS = JSON::XS->new->allow_nonref(1);
 
 =head1 DESCRIPTION
 
@@ -383,9 +385,10 @@ sub _query_remote_api {
   }
 
   my $json = $response->decoded_content;
+  $json = decode_utf8($json);
   $self->_log($json);
 
-  return decode_json($json);
+  return $JSONXS->decode($json);
 }
 
 sub _log {

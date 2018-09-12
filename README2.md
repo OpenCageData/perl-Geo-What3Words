@@ -20,7 +20,7 @@ DEVELOPMENT
 
 COPYRIGHT AND LICENCE
 
-Copyright 2016 OpenCage Data Ltd <cpan@opencagedata.com>
+Copyright 2018 OpenCage Data Ltd <cpan@opencagedata.com>
 
 
 This library is free software; you can redistribute it and/or modify

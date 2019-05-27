@@ -8,11 +8,10 @@ perl:
 env:
   - TEST_AUTHOR=1 PERL_CPANM_OPT="--notest --force --skip-satisfied"
 before_install:
-  - dzil authordeps
   # get the perl modules we need
   # install dist development dependencies
   - "cpanm Dist::Zilla"
-  - "dzil authordeps | xargs cpanm"
+  - "dzil authordeps | grep '::' | xargs cpanm"
   - "export tmpbuild=`mktemp --directory`"
   - "dzil build --in $tmpbuild"
 install: "dzil listdeps | xargs cpanm"

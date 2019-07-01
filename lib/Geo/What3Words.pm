@@ -8,12 +8,12 @@ use warnings;
 use URI;
 use LWP::UserAgent;
 use LWP::Protocol::https;
-use JSON::XS;
+use Cpanel::JSON::XS;
 use Data::Dumper;
 use Net::Ping;
 use Net::Ping::External;
 use Encode;
-my $JSONXS = JSON::XS->new->allow_nonref(1);
+my $JSONXS = Cpanel::JSON::XS->new->allow_nonref(1);
 
 =head1 DESCRIPTION
 
@@ -28,7 +28,7 @@ coordinates into those 3 word addresses (forward) and 3 words into coordinates
 Version 1 is deprecated and will stop working December 2016.
 
 You need to sign up at http://what3words.com/login and then register for an API key
-at http://what3words.com/api/signup”
+at https://what3words.com/get-api-key/
 
 
 

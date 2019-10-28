@@ -35,10 +35,9 @@ This module calls API version 2 (https://docs.what3words.com/api/v2/) to convert
 coordinates into those 3 word addresses (forward) and 3 words into coordinates
 (reverse).
 
-Version 1 is deprecated and will stop working December 2016.
+Version 1 is deprecated and no longer works.
 
-You need to sign up at http://what3words.com/login and then register for an API key
-at https://what3words.com/get-api-key/
+You need to sign up at http://what3words.com/login and then register for an API key at https://what3words.com/get-api-key/
 
 # METHODS
 

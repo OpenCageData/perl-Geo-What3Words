@@ -1,18 +1,18 @@
 # ABSTRACT: turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API
 
-
 package Geo::What3Words;
 
 use strict;
 use warnings;
-use URI;
+use URI::XS;
 use LWP::UserAgent;
-use LWP::Protocol::https;
+#use LWP::Protocol::https;
 use Cpanel::JSON::XS;
 use Data::Dumper;
+use Encode qw( decode_utf8 );
 use Net::Ping;
 use Net::Ping::External;
-use Encode;
+use Ref::Util qw( is_hashref is_coderef );
 my $JSONXS = Cpanel::JSON::XS->new->allow_nonref(1);
 
 =head1 DESCRIPTION
@@ -31,7 +31,6 @@ You need to sign up at http://what3words.com/login and then register for an API 
 at https://what3words.com/get-api-key/
 
 
-
 =head1 SYNOPSIS
 
   my $w3w = Geo::What3Words->new();
@@ -45,12 +44,7 @@ at https://what3words.com/get-api-key/
   $w3w->words2pos('three.example.words');
   # returns '51.484463,-0.195405' (latitude,longitude)
 
-
 =cut
-
-
-
-
 
 =method new
 
@@ -69,7 +63,6 @@ For debugging you can either set logging or provide a callback.
   # will log with log4perl.
 
 =cut
-
 
 sub new {
   my ($class, %params) = @_;
@@ -90,11 +83,6 @@ sub new {
   return bless($self,$class);
 }
 
-
-
-
-
-
 =method ping
 
 Check if the remote server is available. This is helpful for debugging or
@@ -109,7 +97,7 @@ sub ping {
 
   ## http://example.com/some/path => example.com
   ## also works with IP addresses
-  my $host = URI->new($self->{api_endpoint})->host;
+  my $host = URI::XS->new($self->{api_endpoint})->host;
 
   $self->_log("pinging $host...");
 
@@ -120,12 +108,6 @@ sub ping {
 
   return $res;
 }
-
-
-
-
-
-
 
 =method words2pos
 
@@ -141,18 +123,13 @@ Tiny wrapper around words_to_position.
 
 sub words2pos {
   my ($self, @params) = @_;
-  my $res = $self->words_to_position(@params);
 
-  if ( $res && ref($res) eq 'HASH' && exists($res->{geometry}) ){
-    return $res->{geometry}->{lat} . ',' . $res->{geometry}->{lng};
+  my $res = $self->words_to_position(@params);
+  if ( $res && is_hashref($res) && exists($res->{geometry}) ){
+      return $res->{geometry}->{lat} . ',' . $res->{geometry}->{lng};
   }
   return;
 }
-
-
-
-
-
 
 
 =method pos2words
@@ -174,19 +151,11 @@ Tiny wrapper around position_to_words.
 sub pos2words {
   my ($self, @params) = @_;
   my $res = $self->position_to_words(@params);
-
-  if ( $res && ref($res) eq 'HASH' && exists($res->{words}) ){
-    return $res->{words};
+  if ( $res && is_hashref($res) && exists($res->{words}) ){
+      return $res->{words};
   }
   return;
 }
-
-
-
-
-
-
-
 
 =method valid_words_format
 
@@ -210,10 +179,6 @@ sub valid_words_format {
   return 1 if ($words =~ m/^(\p{Lower}+)\.(\p{Lower}+)\.(\p{Lower}+)$/ );
   return 0;
 }
-
-
-
-
 
 =method words_to_position
 
@@ -261,15 +226,6 @@ sub words_to_position {
 
   return $self->_query_remote_api('forward', {addr => $words, lang => $language });
 }
-
-
-
-
-
-
-
-
-
 
 =method position_to_words
 
@@ -347,7 +303,6 @@ Retuns a list of language codes and names.
 sub get_languages {
   my $self = shift;
   my $position = shift;
-
   return $self->_query_remote_api('languages');
 }
 
@@ -362,17 +317,18 @@ sub _query_remote_api {
   my $rh_params   = shift || {};
 
   my $rh_fields = {
-    a=> 1,
+      a      => 1,
       key    => $self->{key},
       format => 'json',
       %$rh_params
   };
+
   foreach my $key (keys %$rh_fields){
-    delete $rh_fields->{$key} if (!defined($rh_fields->{$key}));
+      delete $rh_fields->{$key} if (!defined($rh_fields->{$key}));
   }
 
-  my $uri = URI->new($self->{api_endpoint} . $method_name);
-  $uri->query_form( $rh_fields );
+  my $uri = URI::XS->new($self->{api_endpoint} . $method_name);
+  $uri->query( $rh_fields );
   my $url = $uri->as_string;
 
   $self->_log("GET $url");
@@ -396,12 +352,12 @@ sub _log {
   my $message = shift;
   return unless $self->{logging};
 
-  if ( ref($self->{logging}) eq 'CODE' ){
-    my $lc = $self->{logging};
-    &$lc("Geo::What3Words -- " . $message);
+  if ( is_coderef($self->{logging}) ){
+      my $lc = $self->{logging};
+      &$lc("Geo::What3Words -- " . $message);
   }
   else {
-    print "Geo::What3Words -- " . $message . "\n";
+      print "Geo::What3Words -- " . $message . "\n";
   }
   return;
 }

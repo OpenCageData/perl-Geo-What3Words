@@ -1,17 +1,16 @@
 HTTP/1.1 200 OK
-Connection: close
-Date: Wed, 15 Jun 2016 19:52:44 GMT
-Server: nginx
-Content-Length: 831
-Content-Type: application/json;charset=UTF-8
-Access-Control-Allow-Headers: Content-Type
-Access-Control-Allow-Headers: X-Api-Key
+Connection: Close
+Date: Mon, 02 Dec 2019 23:58:58 GMT
+Vary: Accept-Encoding
+Content-Length: 2317
+Content-Type: application/json;charset=utf-8
+Access-Control-Allow-Headers: Content-Type, X-Api-Key
 Access-Control-Allow-Methods: GET
 Access-Control-Allow-Origin: *
 Client-Response-Num: 1
-Client-SSL-Cert-Issuer: /C=US/O=GeoTrust Inc./CN=RapidSSL SHA256 CA - G3
-Client-SSL-Cert-Subject: /OU=GT36478046/OU=See www.rapidssl.com/resources/cps (c)15/OU=Domain Control Validated - RapidSSL(R)/CN=*.what3words.com
-Client-SSL-Cipher: ECDHE-RSA-AES128-SHA
+Client-SSL-Cert-Issuer: /C=US/O=Amazon/OU=Server CA 1B/CN=Amazon
+Client-SSL-Cert-Subject: /CN=*.london.what3words.com
+Client-SSL-Cipher: ECDHE-RSA-AES128-GCM-SHA256
 Client-SSL-Socket-Class: IO::Socket::SSL
 
-{"languages":[{"code":"de","name":"German","native_name":"Deutsch  (beta)"},{"code":"ru","name":"Russian","native_name":"\u0420\u0443\u0441\u0441\u043a\u0438\u0439  (beta)"},{"code":"sv","name":"Swedish","native_name":"Svenska  (beta)"},{"code":"pt","name":"Portuguese","native_name":"Portugu\u00eas  (beta)"},{"code":"sw","name":"Swahili","native_name":"Kiswahili  (beta)"},{"code":"en","name":"English","native_name":"English"},{"code":"it","name":"Italian","native_name":"Italiano  (beta)"},{"code":"fr","name":"French","native_name":"Fran\u00e7ais  (beta)"},{"code":"es","name":"Spanish; Castilian","native_name":"Espa\u00f1ol  (beta)"},{"code":"tr","name":"Turkish","native_name":"T\u00fcrk\u00e7e  (beta)"}],"status":{"status":200,"reason":"OK"},"thanks":"Thanks from all of us at index.home.raft for using a what3words API"}
+{"thanks":"Thanks from all of us at filled.count.soap for using a what3words API","languages":[{"code":"de","name":"German","native_name":"Deutsch"},{"code":"hi","name":"Hindi","native_name":"हिन्दी"},{"code":"no","name":"Norwegian","native_name":"Norsk"},{"code":"fi","name":"Finnish","native_name":"Suomi"},{"code":"ru","name":"Russian","native_name":"Русский"},{"code":"pt","name":"Portuguese","native_name":"Português"},{"code":"bg","name":"Bulgarian","native_name":"български"},{"code":"bn","name":"Bengali","native_name":"বাংলা"},{"code":"fr","name":"French","native_name":"Français"},{"code":"hu","name":"Hungarian","native_name":"Magyar"},{"code":"id","name":"Bahasa Indonesia","native_name":"Bahasa Indonesia"},{"code":"mn","name":"Mongolian","native_name":"Mонгол"},{"code":"sv","name":"Swedish","native_name":"Svenska"},{"code":"ko","name":"Korean","native_name":"한국어"},{"code":"sw","name":"Swahili","native_name":"Kiswahili"},{"code":"af","name":"Afrikaans","native_name":"Afrikaans"},{"code":"mr","name":"Marathi (Marāṭhī)","native_name":"मराठी"},{"code":"ms","name":"Bahasa Malayia","native_name":"Bahasa Malaysia"},{"code":"el","name":"Greek","native_name":"Ελληνικά"},{"code":"en","name":"English","native_name":"English"},{"code":"it","name":"Italian","native_name":"Italiano"},{"code":"ta","name":"Tamil","native_name":"தமிழ்"},{"code":"es","name":"Spanish","native_name":"Español"},{"code":"zh","name":"Chinese","native_name":"中文"},{"code":"cs","name":"Czech","native_name":"Čeština"},{"code":"xh","name":"Xhosa","native_name":"isiXhosa"},{"code":"ar","name":"Arabic","native_name":"العربية"},{"code":"te","name":"Telugu","native_name":"తెలుగు"},{"code":"th","name":"Thai","native_name":"ไทย"},{"code":"ja","name":"Japanese","native_name":"日本語"},{"code":"zu","name":"Zulu","native_name":"isiZulu"},{"code":"pl","name":"Polish","native_name":"Polski"},{"code":"da","name":"Danish","native_name":"Dansk"},{"code":"he","name":"Hebrew (modern)","native_name":"עברית"},{"code":"ro","name":"Romanian","native_name":"Română"},{"code":"nl","name":"Dutch","native_name":"Nederlands"},{"code":"tr","name":"Turkish","native_name":"Türkçe"}],"status":{"reason":"OK","status":200}}

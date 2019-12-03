@@ -1,17 +1,16 @@
 HTTP/1.1 200 OK
-Connection: close
-Date: Wed, 15 Jun 2016 19:52:43 GMT
-Server: nginx
-Content-Length: 718
-Content-Type: application/json;charset=UTF-8
-Access-Control-Allow-Headers: Content-Type
-Access-Control-Allow-Headers: X-Api-Key
+Connection: Close
+Date: Mon, 02 Dec 2019 23:58:58 GMT
+Vary: Accept-Encoding
+Content-Length: 621
+Content-Type: application/json;charset=utf-8
+Access-Control-Allow-Headers: Content-Type, X-Api-Key
 Access-Control-Allow-Methods: GET
 Access-Control-Allow-Origin: *
 Client-Response-Num: 1
-Client-SSL-Cert-Issuer: /C=US/O=GeoTrust Inc./CN=RapidSSL SHA256 CA - G3
-Client-SSL-Cert-Subject: /OU=GT36478046/OU=See www.rapidssl.com/resources/cps (c)15/OU=Domain Control Validated - RapidSSL(R)/CN=*.what3words.com
-Client-SSL-Cipher: ECDHE-RSA-AES128-SHA
+Client-SSL-Cert-Issuer: /C=US/O=Amazon/OU=Server CA 1B/CN=Amazon
+Client-SSL-Cert-Subject: /CN=*.london.what3words.com
+Client-SSL-Cipher: ECDHE-RSA-AES128-GCM-SHA256
 Client-SSL-Socket-Class: IO::Socket::SSL
 
-{"crs":{"type":"link","properties":{"href":"http:\/\/spatialreference.org\/ref\/epsg\/4326\/ogcwkt\/","type":"ogcwkt"}},"words":"\u043f\u0438\u0442\u043e\u043c\u0435\u0446.\u0448\u0443\u0442\u0438\u0442\u044c.\u043d\u0430\u043c\u0435\u0440\u0435\u043d\u043d\u043e","bounds":{"southwest":{"lng":"-0.195426","lat":"51.484449"},"northeast":{"lng":"-0.195383","lat":"51.484476"}},"geometry":{"lng":"-0.195405","lat":"51.484463"},"language":"ru","map":"http:\/\/w3w.co\/\u043f\u0438\u0442\u043e\u043c\u0435\u0446.\u0448\u0443\u0442\u0438\u0442\u044c.\u043d\u0430\u043c\u0435\u0440\u0435\u043d\u043d\u043e","status":{"status":200,"reason":"OK"},"thanks":"Thanks from all of us at index.home.raft for using a what3words API"}
+{"thanks":"Thanks from all of us at filled.count.soap for using a what3words API","crs":{"type":"link","properties":{"href":"http:\/\/spatialreference.org\/ref\/epsg\/4326\/ogcwkt\/","type":"ogcwkt"}},"words":"питомец.шутить.намеренно","bounds":{"southwest":{"lng":-0.195426,"lat":51.484449},"northeast":{"lng":-0.195383,"lat":51.484476}},"geometry":{"lng":-0.195405,"lat":51.484463},"language":"ru","map":"https:\/\/w3w.co\/%D0%BF%D0%B8%D1%82%D0%BE%D0%BC%D0%B5%D1%86.%D1%88%D1%83%D1%82%D0%B8%D1%82%D1%8C.%D0%BD%D0%B0%D0%BC%D0%B5%D1%80%D0%B5%D0%BD%D0%BD%D0%BE","status":{"reason":"OK","status":200}}

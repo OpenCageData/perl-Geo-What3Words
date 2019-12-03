@@ -68,7 +68,9 @@ my $w3w = Geo::What3Words->new( key => $api_key, ua => $ua, logging => $logging_
 isa_ok($w3w, 'Geo::What3Words');
 
 if ($api_key eq 'randomteststring') {
-    plan skip_all => "Set W3W_API_KEY environment variable to run rest of tests";
+    note "Set W3W_API_KEY environment variable to run rest of tests";
+    done_testing();
+    exit;
 }
 
 

@@ -4,16 +4,18 @@ package Geo::What3Words;
 
 use strict;
 use warnings;
-use URI::XS;
 use LWP::UserAgent;
-#use LWP::Protocol::https;
 use Cpanel::JSON::XS;
 use Data::Dumper;
+$Data::Dumper::Sortkeys = 1;
 use Encode qw( decode_utf8 );
 use Net::Ping;
 use Net::Ping::External;
 use Ref::Util qw( is_hashref is_coderef );
+use URI;
+
 my $JSONXS = Cpanel::JSON::XS->new->allow_nonref(1);
+
 
 =head1 DESCRIPTION
 
@@ -97,7 +99,7 @@ sub ping {
 
   ## http://example.com/some/path => example.com
   ## also works with IP addresses
-  my $host = URI::XS->new($self->{api_endpoint})->host;
+  my $host = URI->new($self->{api_endpoint})->host;
 
   $self->_log("pinging $host...");
 
@@ -327,8 +329,8 @@ sub _query_remote_api {
       delete $rh_fields->{$key} if (!defined($rh_fields->{$key}));
   }
 
-  my $uri = URI::XS->new($self->{api_endpoint} . $method_name);
-  $uri->query( $rh_fields );
+  my $uri = URI->new($self->{api_endpoint} . $method_name);
+  $uri->query_form( $rh_fields );
   my $url = $uri->as_string;
 
   $self->_log("GET $url");

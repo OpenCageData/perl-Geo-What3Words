@@ -1,5 +1,10 @@
 Revision history for Perl module Geo::What3Words.
 
+2.1.6   2019-12-03
+        - fixes for HTTP::Tiny instead of LWP::UserAgent
+        - no longer use Test::LWP::Recorder
+        - add Net::SSLeay
+
 2.1.5   2019-12-03
         - use HTTP::Tiny instead of LWP::UserAgent
         

@@ -1,9 +1,3 @@
-[![Build Status](https://travis-ci.org/OpenCageData/perl-Geo-What3Words.svg?branch=master)](https://travis-ci.org/OpenCageData/perl-Geo-What3Words)
-
-[![CPAN](https://img.shields.io/cpan/v/Geo-What3Words.svg?style=flat-square)](https://metacpan.org/pod/Geo::What3Words)
-
-[![Coverage Status](https://coveralls.io/repos/github/OpenCageData/perl-Geo-What3Words/badge.svg?branch=master)](https://coveralls.io/github/OpenCageData/perl-Geo-What3Words?branch=master)
-
 # NAME
 
 Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API
@@ -35,9 +29,10 @@ This module calls API version 2 (https://docs.what3words.com/api/v2/) to convert
 coordinates into those 3 word addresses (forward) and 3 words into coordinates
 (reverse).
 
-Version 1 is deprecated and no longer works.
+Version 1 is deprecated and no longer works
 
-You need to sign up at http://what3words.com/login and then register for an API key at https://what3words.com/get-api-key/
+You need to sign up at http://what3words.com/login and then register for an API key
+at https://what3words.com/get-api-key/
 
 # METHODS
 

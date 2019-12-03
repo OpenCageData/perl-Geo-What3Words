@@ -4,11 +4,11 @@ package Geo::What3Words;
 
 use strict;
 use warnings;
-use LWP::UserAgent;
 use Cpanel::JSON::XS;
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 use Encode qw( decode_utf8 );
+use HTTP::Tiny;
 use Net::Ping;
 use Net::Ping::External;
 use Ref::Util qw( is_hashref is_coderef );
@@ -77,7 +77,7 @@ sub new {
 
   ## _ua is used for testing. But could also be used to
   ## set proxies or such
-  $self->{ua} = $params{ua} || LWP::UserAgent->new;
+  $self->{ua} = $params{ua} || HTTP::Tiny->new;
 
   my $version  = $Geo::What3Words::VERSION || '';
   $self->{ua}->agent("Perl Geo::What3Words $version");
@@ -342,7 +342,7 @@ sub _query_remote_api {
     return;
   }
 
-  my $json = $response->decoded_content;
+  my $json = $response->content;
   $json = decode_utf8($json);
   $self->_log($json);
 

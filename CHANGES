@@ -1,5 +1,8 @@
 Revision history for Perl module Geo::What3Words.
 
+2.1.5   2019-12-03
+        - use HTTP::Tiny instead of LWP::UserAgent
+        
 2.1.4   2019-12-03
         - switch back to URI as seeing problems with URI::XS
         

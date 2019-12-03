@@ -10,7 +10,7 @@ Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-vers
 
 # VERSION
 
-version 2.1.2
+version 2.1.3
 
 # SYNOPSIS
 

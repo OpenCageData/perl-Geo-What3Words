@@ -336,13 +336,13 @@ sub _query_remote_api {
   $self->_log("GET $url");
   my $response = $self->{ua}->get($url);
 
-  if ( ! $response->is_success) {
-    warn "got failed response from $url: " . $response->status_line;
-    $self->_log("got failed response from $url: " . $response->status_line);
+  if ( ! $response->{success}) {
+    warn "got failed response from $url: " . $response->{status};
+    $self->_log("got failed response from $url: " . $response->{status});
     return;
   }
 
-  my $json = $response->content;
+  my $json = $response->{content};
   $json = decode_utf8($json);
   $self->_log($json);
 

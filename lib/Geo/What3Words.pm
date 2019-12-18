@@ -188,36 +188,26 @@ Returns a more verbose response than words2pos.
 
   $w3w->words_to_position('prom.cape.pump');
   # {
-  #   "crs": {
-  #     "type": "link",
-  #     "properties": {
-  #       "href": "http://spatialreference.org/ref/epsg/4326/ogcwkt/",
-  #       "type": "ogcwkt"
-  #     }
-  #   },
-  #   "words": "prom.cape.pump",
-  #   "bounds": {
-  #     "southwest": {
-  #       "lng": "-0.195426",
-  #       "lat":"51.484449"
-  #     },
-  #     "northeast": {
-  #       "lng": "-0.195383",
-  #       "lat": "51.484476"
-  #     }
-  #   },
-  #   "geometry": {
-  #     "lng": "-0.195405",
-  #     "lat": "51.484463"
-  #   },
-  #   "language": "en",
-  #   "map": "http://w3w.co/prom.cape.pump",
-  #   "status": {
-  #     "status": 200,
-  #     "reason": "OK"
-  #   },
-  #   "thanks": "Thanks from all of us at index.home.raft for using a what3words API"
-  # }
+  #        'coordinates' => {
+  #                           'lat' => '51.484463',
+  #                           'lng' => '-0.195405'
+  #                         },
+  #        'country' => 'GB',
+  #        'language' => 'en',
+  #        'map' => 'https://w3w.co/prom.cape.pump',
+  #        'nearestPlace' => 'Kensington, London',
+  #        'square' => {
+  #                      'northeast' => {
+  #                                       'lat' => '51.484476',
+  #                                       'lng' => '-0.195383'
+  #                                     },
+  #                      'southwest' => {
+  #                                       'lat' => '51.484449',
+  #                                       'lng' => '-0.195426'
+  #                                     }
+  #                    },
+  #        'words' => 'prom.cape.pump'
+  #      };
 
 =cut
 
@@ -236,37 +226,28 @@ sub words_to_position {
 Returns a more verbose response than pos2words.
 
   $w3w->position_to_words('51.484463,-0.195405')
+
   # {
-  #   "crs": {
-  #     "type": "link",
-  #     "properties": {
-  #       "href": "http://spatialreference.org/ref/epsg/4326/ogcwkt/",
-  #       "type": "ogcwkt"
-  #     }
-  #   },
-  #   "words": "prom.cape.pump",
-  #   "bounds": {
-  #     "southwest": {
-  #       "lng": "-0.195426",
-  #       "lat": "51.484449"
-  #     },
-  #     "northeast": {
-  #       "lng": "-0.195383",
-  #       "lat": "51.484476"
-  #     }
-  #   },
-  #   "geometry": {
-  #     "lng": "-0.195405",
-  #     "lat": "51.484463"
-  #   },
-  #   "language": "en",
-  #   "map": "http://w3w.co/prom.cape.pump",
-  #   "status": {
-  #     "status": 200,
-  #     "reason": "OK"
-  #   },
-  #   "thanks": "Thanks from all of us at index.home.raft for using a what3words API"
-  # }
+  #        'coordinates' => {
+  #                           'lat' => '51.484463',
+  #                           'lng' => '-0.195405'
+  #                         },
+  #        'country' => 'GB',
+  #        'language' => 'en',
+  #        'map' => 'https://w3w.co/prom.cape.pump',
+  #        'nearestPlace' => 'Kensington, London',
+  #        'square' => {
+  #                      'northeast' => {
+  #                                       'lat' => '51.484476',
+  #                                       'lng' => '-0.195383'
+  #                                     },
+  #                      'southwest' => {
+  #                                       'lat' => '51.484449',
+  #                                       'lng' => '-0.195426'
+  #                                     }
+  #                    },
+  #        'words' => 'prom.cape.pump'
+  #      };
 
 =cut
 
@@ -291,17 +272,17 @@ Retuns a list of language codes and names.
   #     'languages' => [
   #                      {
   #                        'name' => 'German',
-  #                        'name_native' => 'Deutsch',
+  #                        'nativeName' => 'Deutsch',
   #                        'code' => 'de'
   #                      },
   #                      {
   #                        'name' => 'English',
-  #                        'name_native' => 'English',
+  #                        'nativeName' => 'English',
   #                        'code' => 'en'
   #                      },
   #                      {
   #                        'name' => "Spanish",
-  #                        'name_native' => "Español",
+  #                        'nativeName' => "Español",
   #                        'code' => 'es'
   #                      },
   # ...

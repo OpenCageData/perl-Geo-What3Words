@@ -106,7 +106,7 @@ my $three_words_string_russian;
 
   is($res->{language}, 'en', 'words_to_position - language');
   is_deeply(
-    [ $res->{geometry}->{lat}, $res->{geometry}->{lng} ],
+    [ $res->{coordinates}->{lat}, $res->{coordinates}->{lng} ],
     [ $lat, $lng ],
     'words_to_position - position'
   );
@@ -133,21 +133,18 @@ my $three_words_string_russian;
 {
   my $res = $w3w->words_to_position($three_words_string);
 
-  is($res->{language}, 'en', 'position_to_words - language');
+  is($res->{language}, 'en', 'words_to_position - language');
   is_deeply(
-    [ $res->{geometry}->{lat}, $res->{geometry}->{lng} ],
+    [ $res->{coordinates}->{lat}, $res->{coordinates}->{lng} ],
     [ $lat, $lng ],
-    'position_to_words - position'
+    'words_to_position - position'
   );
   is(
-    $res->{words},
-    $three_words_string,
-    'position_to_words - words'
+      $res->{words},
+      $three_words_string,
+      'words_to_position - words'      
   );
-
-
 }
-
 
 
 ##
@@ -160,7 +157,7 @@ my $three_words_string_russian;
 
   my $rh_lang = first { $_->{'code'} eq 'ru'} @{$res->{languages}};
   like($rh_lang->{name}, qr/^Russian/, 'get_languages - name');
-  like($rh_lang->{native_name}, qr/^Русский/, 'get_languages - name encoded in utf8');
+  like($rh_lang->{nativeName}, qr/^Русский/, 'get_languages - name encoded in utf8');
 }
 
 

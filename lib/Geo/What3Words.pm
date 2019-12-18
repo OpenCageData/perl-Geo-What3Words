@@ -23,14 +23,14 @@ what3words (http://what3words.com/) divides the world into 57 trillion squares
 of 3 metres x 3 metres. Each square has been given a 3 word address comprised
 of 3 words from the dictionary.
 
-This module calls API version 2 (https://docs.what3words.com/api/v2/) to convert
-coordinates into those 3 word addresses (forward) and 3 words into coordinates
-(reverse).
+This module calls API version 3 (https://docs.what3words.com/public-api/) 
+to convert coordinates into 3 word addresses (forward) and 3 
+words into coordinates (reverse).
 
-Version 1 is deprecated and no longer works
+Versions 1 and 2 are deprecated and are no longer supported.
 
-You need to sign up at http://what3words.com/login and then register for an API key
-at https://what3words.com/get-api-key/
+You need to sign up at http://what3words.com/login and then register for 
+an API key at https://developer.what3words.com
 
 
 =head1 SYNOPSIS
@@ -70,7 +70,7 @@ sub new {
   my ($class, %params) = @_;
 
   my $self = {};
-  $self->{api_endpoint}     = $params{api_endpoint} || 'https://api.what3words.com/v2/';
+  $self->{api_endpoint}     = $params{api_endpoint} || 'https://api.what3words.com/v3/';
   $self->{key}              = $params{key}      || die "API key not set";
   $self->{language}         = $params{language};
   $self->{logging}          = $params{logging};
@@ -127,8 +127,8 @@ sub words2pos {
   my ($self, @params) = @_;
 
   my $res = $self->words_to_position(@params);
-  if ( $res && is_hashref($res) && exists($res->{geometry}) ){
-      return $res->{geometry}->{lat} . ',' . $res->{geometry}->{lng};
+  if ( $res && is_hashref($res) && exists($res->{coordinates}) ){
+      return $res->{coordinates}->{lat} . ',' . $res->{coordinates}->{lng};
   }
   return;
 }
@@ -224,9 +224,11 @@ Returns a more verbose response than words2pos.
 sub words_to_position {
   my $self = shift;
   my $words = shift;
-  my $language = shift || $self->{language};
 
-  return $self->_query_remote_api('forward', {addr => $words, lang => $language });
+  return $self->_query_remote_api('convert-to-coordinates', { 
+      words => $words
+  });
+  
 }
 
 =method position_to_words
@@ -269,11 +271,15 @@ Returns a more verbose response than pos2words.
 =cut
 
 sub position_to_words {
-  my $self = shift;
+  my $self     = shift;
   my $position = shift;
   my $language = shift || $self->{language};
 
-  return $self->_query_remote_api('reverse', {coords => $position, lang => $language });
+  # https://developer.what3words.com/public-api/docs#convert-to-3wa
+  return $self->_query_remote_api('convert-to-3wa', {
+      coordinates => $position, 
+      language => $language 
+  });
 }
 
 =method get_languages
@@ -305,7 +311,7 @@ Retuns a list of language codes and names.
 sub get_languages {
   my $self = shift;
   my $position = shift;
-  return $self->_query_remote_api('languages');
+  return $self->_query_remote_api('available-languages');
 }
 
 sub oneword_available {
@@ -319,7 +325,7 @@ sub _query_remote_api {
   my $rh_params   = shift || {};
 
   my $rh_fields = {
-      a      => 1,
+      #a      => 1,
       key    => $self->{key},
       format => 'json',
       %$rh_params

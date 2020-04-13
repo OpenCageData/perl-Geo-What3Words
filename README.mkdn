@@ -1,195 +1,54 @@
+# Geo::What3Words - Perl interface to the what3words API
+
+## Build Status
+
 [![Build Status](https://travis-ci.org/OpenCageData/perl-Geo-What3Words.svg?branch=master)](https://travis-ci.org/OpenCageData/perl-Geo-What3Words)
-
 [![CPAN](https://img.shields.io/cpan/v/Geo-What3Words.svg?style=flat-square)](https://metacpan.org/pod/Geo::What3Words)
-
 [![Coverage Status](https://coveralls.io/repos/github/OpenCageData/perl-Geo-What3Words/badge.svg?branch=master)](https://coveralls.io/github/OpenCageData/perl-Geo-What3Words?branch=master)
 
-# NAME
+## Usage
 
-Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API
-
-# VERSION
-
-version 3.0.0
-
-# SYNOPSIS
-
-    my $w3w = Geo::What3Words->new();
-
-    $w3w->pos2words('51.484463,-0.195405');
-    # returns 'three.example.words'
-
-    $w3w->pos2words('51.484463,-0.195405', 'ru');
-    # returns 'три.пример.слова'
-
-    $w3w->words2pos('three.example.words');
-    # returns '51.484463,-0.195405' (latitude,longitude)
-
-# DESCRIPTION
-
-what3words (http://what3words.com/) divides the world into 57 trillion squares
-of 3 metres x 3 metres. Each square has been given a 3 word address comprised
-of 3 words from the dictionary.
+For docs please see [the Geo::What3Words page on search.metacpan.org](https://metacpan.org/pod/Geo::What3Words)
+or `perldoc Geo::What3Words`.
 
 This module calls API version 3 (https://docs.what3words.com/public-api/) 
-to convert coordinates into 3 word addresses (forward) and 3 
-words into coordinates (reverse).
+to convert coordinates into 3 word addresses (forward)
+and 3 words into coordinates (reverse).
 
 Versions 1 and 2 are deprecated and are no longer supported.
 
 You need to sign up at http://what3words.com/login and then register for 
 an API key at https://developer.what3words.com
 
-# METHODS
+# Development
 
-## new
+´´´
+dzil clean
 
-Creates a new instance. The api key is required.
+# running the test-suite
+TEST_AUTHOR=1 PERLLIB=./lib prove -r t/
 
-    my $w3w = Geo::What3Words->new( key => 'your-api-key' );
-    my $w3w = Geo::What3Words->new( key => 'your-api-key', language => 'ru' );
+# running the test-suite with calls to w3w
+TEST_AUTHOR=1 PERLLIB=./lib W3W_API_KEY=XXXXX prove -r t/
+        
+dzil build
 
-For debugging you can either set logging or provide a callback.
+# git push, upload to CPAN
+dzil release
+``` 
 
-    my $w3w = Geo::What3Words->new( key => 'your-api-key', logging => 1 );
-    # will print debugging output to STDOUT
+## COPYRIGHT AND LICENSE
 
-    my $callback = sub { my $msg = shift; $my_log4perl_logger->info($msg) };
-    my $w3w = Geo::What3Words->new( key => 'your-api-key', logging => $callback );
-    # will log with log4perl.
-
-## ping
-
-Check if the remote server is available. This is helpful for debugging or
-testing, but too slow to run for every conversion.
-
-    $w3w->ping();
-
-## words2pos
-
-Tiny wrapper around words\_to\_position.
-
-    $w3w->words2pos('three.example.words');
-    # returns '51.484463,-0.195405' (latitude,longitude)
-
-    $w3w->words2pos('does.not.exist');
-    # returns undef
-
-## pos2words
-
-Tiny wrapper around position\_to\_words.
-
-    $w3w->pos2words('51.484463,-0.195405'); # latitude,longitude
-    # returns 'three.example.words'
-
-    $w3w->pos2words('51.484463,-0.195405', 'ru');
-    # returns 'три.пример.слова'
-
-    $w3w->pos2words('invalid,coords');
-    # returns undef
-
-## valid\_words\_format
-
-Returns 1 if the string looks like three words, 0 otherwise. Does
-not call the remote API.
-
-    $w3w->valid_words_format('one.two.three');
-    # returns 1
-
-## words\_to\_position
-
-Returns a more verbose response than words2pos.
-
-    $w3w->words_to_position('prom.cape.pump');
-    # {
-    #        'coordinates' => {
-    #                           'lat' => '51.484463',
-    #                           'lng' => '-0.195405'
-    #                         },
-    #        'country' => 'GB',
-    #        'language' => 'en',
-    #        'map' => 'https://w3w.co/prom.cape.pump',
-    #        'nearestPlace' => 'Kensington, London',
-    #        'square' => {
-    #                      'northeast' => {
-    #                                       'lat' => '51.484476',
-    #                                       'lng' => '-0.195383'
-    #                                     },
-    #                      'southwest' => {
-    #                                       'lat' => '51.484449',
-    #                                       'lng' => '-0.195426'
-    #                                     }
-    #                    },
-    #        'words' => 'prom.cape.pump'
-    #      };
-
-## position\_to\_words
-
-Returns a more verbose response than pos2words.
-
-    $w3w->position_to_words('51.484463,-0.195405')
-
-    # {
-    #        'coordinates' => {
-    #                           'lat' => '51.484463',
-    #                           'lng' => '-0.195405'
-    #                         },
-    #        'country' => 'GB',
-    #        'language' => 'en',
-    #        'map' => 'https://w3w.co/prom.cape.pump',
-    #        'nearestPlace' => 'Kensington, London',
-    #        'square' => {
-    #                      'northeast' => {
-    #                                       'lat' => '51.484476',
-    #                                       'lng' => '-0.195383'
-    #                                     },
-    #                      'southwest' => {
-    #                                       'lat' => '51.484449',
-    #                                       'lng' => '-0.195426'
-    #                                     }
-    #                    },
-    #        'words' => 'prom.cape.pump'
-    #      };
-
-## get\_languages
-
-Retuns a list of language codes and names.
-
-    $w3w->get_languages();
-    # {
-    #     'languages' => [
-    #                      {
-    #                        'name' => 'German',
-    #                        'nativeName' => 'Deutsch',
-    #                        'code' => 'de'
-    #                      },
-    #                      {
-    #                        'name' => 'English',
-    #                        'nativeName' => 'English',
-    #                        'code' => 'en'
-    #                      },
-    #                      {
-    #                        'name' => "Spanish",
-    #                        'nativeName' => "Español",
-    #                        'code' => 'es'
-    #                      },
-    # ...
-
-# INSTALLATION
-
-The test suite will use pre-recorded API responses. If you suspect something
-changed in the API you can force the test suite to use live requests with
-your API key
-
-    PERLLIB=./lib W3W_RECORD_REQUESTS=1 W3W_API_KEY=<your key> perl t/base.t
-
-# AUTHOR
-
-mtmail <mtmail-cpan@gmx.net>
-
-# COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2019 by OpenCage GmbH.
+This software is copyright OpenCage GmbH.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
+
+### Who is OpenCage GmbH?
+
+<a href="https://opencagedata.com"><img src="opencage_logo_300_150.png"></a>
+
+We run the [OpenCage Geocoder](https://opencagedata.com). Learn more [about us](https://opencagedata.com/about). 
+
+We also run [Geomob](https://thegeomob.com), a series of regular meetups for location based service creators, where we do our best to highlight geoinnovation. If you like geo stuff, you will probably enjoy [the Geomob podcast](https://thegeomob.com/podcast/).
+

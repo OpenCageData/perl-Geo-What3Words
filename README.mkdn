@@ -22,8 +22,8 @@ an API key at https://developer.what3words.com
 
 # Development
 
-´´´
-dzil clean
+```
+# dzil clean
 
 # running the test-suite
 TEST_AUTHOR=1 PERLLIB=./lib prove -r t/

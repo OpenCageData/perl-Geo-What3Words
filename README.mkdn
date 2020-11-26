@@ -2,7 +2,7 @@
 
 ## Build Status
 
-[![Build Status](https://travis-ci.org/OpenCageData/perl-Geo-What3Words.svg?branch=master)](https://travis-ci.org/OpenCageData/perl-Geo-What3Words)
+[![Build Status](https://api.travis-ci.com/OpenCageData/perl-Geo-What3Words.svg?branch=master)](https://travis-ci.com/github/OpenCageData/perl-Geo-What3Words)
 [![CPAN](https://img.shields.io/cpan/v/Geo-What3Words.svg?style=flat-square)](https://metacpan.org/pod/Geo::What3Words)
 [![Coverage Status](https://coveralls.io/repos/github/OpenCageData/perl-Geo-What3Words/badge.svg?branch=master)](https://coveralls.io/github/OpenCageData/perl-Geo-What3Words?branch=master)
 

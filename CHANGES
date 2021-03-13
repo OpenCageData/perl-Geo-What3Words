@@ -1,6 +1,7 @@
 Revision history for Perl module Geo::What3Words.
 
 3.0.1   2021-03-12
+         - use URI::XS instead of URI
          - perltidy all files, add tidy test and precommit hook
          many thanks to Olaf Alders for the step by step guide
          http://www.perladvent.org/2020/2020-12-01.html

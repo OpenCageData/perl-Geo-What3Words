@@ -67,22 +67,22 @@ For debugging you can either set logging or provide a callback.
 =cut
 
 sub new {
-  my ($class, %params) = @_;
+    my ($class, %params) = @_;
 
-  my $self = {};
-  $self->{api_endpoint}     = $params{api_endpoint} || 'https://api.what3words.com/v3/';
-  $self->{key}              = $params{key}      || die "API key not set";
-  $self->{language}         = $params{language};
-  $self->{logging}          = $params{logging};
+    my $self = {};
+    $self->{api_endpoint} = $params{api_endpoint} || 'https://api.what3words.com/v3/';
+    $self->{key}          = $params{key}          || die "API key not set";
+    $self->{language}     = $params{language};
+    $self->{logging}      = $params{logging};
 
-  ## _ua is used for testing. But could also be used to
-  ## set proxies or such
-  $self->{ua} = $params{ua} || HTTP::Tiny->new;
+    ## _ua is used for testing. But could also be used to
+    ## set proxies or such
+    $self->{ua} = $params{ua} || HTTP::Tiny->new;
 
-  my $version  = $Geo::What3Words::VERSION || '';
-  $self->{ua}->agent("Perl Geo::What3Words $version");
+    my $version = $Geo::What3Words::VERSION || '';
+    $self->{ua}->agent("Perl Geo::What3Words $version");
 
-  return bless($self,$class);
+    return bless($self, $class);
 }
 
 =method ping
@@ -95,20 +95,20 @@ testing, but too slow to run for every conversion.
 =cut
 
 sub ping {
-  my $self = shift;
+    my $self = shift;
 
-  ## http://example.com/some/path => example.com
-  ## also works with IP addresses
-  my $host = URI->new($self->{api_endpoint})->host;
+    ## http://example.com/some/path => example.com
+    ## also works with IP addresses
+    my $host = URI->new($self->{api_endpoint})->host;
 
-  $self->_log("pinging $host...");
+    $self->_log("pinging $host...");
 
-  my $netping = Net::Ping->new('external');
-  my $res = $netping->ping($host);
+    my $netping = Net::Ping->new('external');
+    my $res     = $netping->ping($host);
 
-  $self->_log($res ? 'available' : 'unavailable');
+    $self->_log($res ? 'available' : 'unavailable');
 
-  return $res;
+    return $res;
 }
 
 =method words2pos
@@ -124,13 +124,13 @@ Tiny wrapper around words_to_position.
 =cut
 
 sub words2pos {
-  my ($self, @params) = @_;
+    my ($self, @params) = @_;
 
-  my $res = $self->words_to_position(@params);
-  if ( $res && is_hashref($res) && exists($res->{coordinates}) ){
-      return $res->{coordinates}->{lat} . ',' . $res->{coordinates}->{lng};
-  }
-  return;
+    my $res = $self->words_to_position(@params);
+    if ($res && is_hashref($res) && exists($res->{coordinates})) {
+        return $res->{coordinates}->{lat} . ',' . $res->{coordinates}->{lng};
+    }
+    return;
 }
 
 
@@ -151,12 +151,12 @@ Tiny wrapper around position_to_words.
 =cut
 
 sub pos2words {
-  my ($self, @params) = @_;
-  my $res = $self->position_to_words(@params);
-  if ( $res && is_hashref($res) && exists($res->{words}) ){
-      return $res->{words};
-  }
-  return;
+    my ($self, @params) = @_;
+    my $res = $self->position_to_words(@params);
+    if ($res && is_hashref($res) && exists($res->{words})) {
+        return $res->{words};
+    }
+    return;
 }
 
 =method valid_words_format
@@ -170,16 +170,16 @@ not call the remote API.
 =cut
 
 sub valid_words_format {
-  my $self = shift;
-  my $words = shift;
+    my $self  = shift;
+    my $words = shift;
 
-  ## Translating the PHP regular expression w3w uses in their
-  ## documentation
-  ## http://perldoc.perl.org/perlunicode.html#Unicode-Character-Properties
-  ## http://php.net/manual/en/reference.pcre.pattern.differences.php
-  return 0 unless $words;
-  return 1 if ($words =~ m/^(\p{Lower}+)\.(\p{Lower}+)\.(\p{Lower}+)$/ );
-  return 0;
+    ## Translating the PHP regular expression w3w uses in their
+    ## documentation
+    ## http://perldoc.perl.org/perlunicode.html#Unicode-Character-Properties
+    ## http://php.net/manual/en/reference.pcre.pattern.differences.php
+    return 0 unless $words;
+    return 1 if ($words =~ m/^(\p{Lower}+)\.(\p{Lower}+)\.(\p{Lower}+)$/);
+    return 0;
 }
 
 =method words_to_position
@@ -212,13 +212,11 @@ Returns a more verbose response than words2pos.
 =cut
 
 sub words_to_position {
-  my $self = shift;
-  my $words = shift;
+    my $self  = shift;
+    my $words = shift;
 
-  return $self->_query_remote_api('convert-to-coordinates', { 
-      words => $words
-  });
-  
+    return $self->_query_remote_api('convert-to-coordinates', {words => $words});
+
 }
 
 =method position_to_words
@@ -252,15 +250,17 @@ Returns a more verbose response than pos2words.
 =cut
 
 sub position_to_words {
-  my $self     = shift;
-  my $position = shift;
-  my $language = shift || $self->{language};
+    my $self     = shift;
+    my $position = shift;
+    my $language = shift || $self->{language};
 
-  # https://developer.what3words.com/public-api/docs#convert-to-3wa
-  return $self->_query_remote_api('convert-to-3wa', {
-      coordinates => $position, 
-      language => $language 
-  });
+    # https://developer.what3words.com/public-api/docs#convert-to-3wa
+    return $self->_query_remote_api(
+        'convert-to-3wa',
+        {   coordinates => $position,
+            language    => $language
+        }
+    );
 }
 
 =method get_languages
@@ -290,65 +290,64 @@ Retuns a list of language codes and names.
 =cut
 
 sub get_languages {
-  my $self = shift;
-  my $position = shift;
-  return $self->_query_remote_api('available-languages');
+    my $self     = shift;
+    my $position = shift;
+    return $self->_query_remote_api('available-languages');
 }
 
 sub oneword_available {
-  warn 'deprecated method: oneword_available';
-  return;
+    warn 'deprecated method: oneword_available';
+    return;
 }
 
 sub _query_remote_api {
-  my $self        = shift;
-  my $method_name = shift;
-  my $rh_params   = shift || {};
+    my $self        = shift;
+    my $method_name = shift;
+    my $rh_params   = shift || {};
 
-  my $rh_fields = {
-      #a      => 1,
-      key    => $self->{key},
-      format => 'json',
-      %$rh_params
-  };
+    my $rh_fields = {
+        #a      => 1,
+        key    => $self->{key},
+        format => 'json',
+        %$rh_params
+    };
 
-  foreach my $key (keys %$rh_fields){
-      delete $rh_fields->{$key} if (!defined($rh_fields->{$key}));
-  }
+    foreach my $key (keys %$rh_fields) {
+        delete $rh_fields->{$key} if (!defined($rh_fields->{$key}));
+    }
 
-  my $uri = URI->new($self->{api_endpoint} . $method_name);
-  $uri->query_form( $rh_fields );
-  my $url = $uri->as_string;
+    my $uri = URI->new($self->{api_endpoint} . $method_name);
+    $uri->query_form($rh_fields);
+    my $url = $uri->as_string;
 
-  $self->_log("GET $url");
-  my $response = $self->{ua}->get($url);
+    $self->_log("GET $url");
+    my $response = $self->{ua}->get($url);
 
-  if ( ! $response->{success}) {
-    warn "got failed response from $url: " . $response->{status};
-    $self->_log("got failed response from $url: " . $response->{status});
-    return;
-  }
+    if (!$response->{success}) {
+        warn "got failed response from $url: " . $response->{status};
+        $self->_log("got failed response from $url: " . $response->{status});
+        return;
+    }
 
-  my $json = $response->{content};
-  $json = decode_utf8($json);
-  $self->_log($json);
+    my $json = $response->{content};
+    $json = decode_utf8($json);
+    $self->_log($json);
 
-  return $JSONXS->decode($json);
+    return $JSONXS->decode($json);
 }
 
 sub _log {
-  my $self    = shift;
-  my $message = shift;
-  return unless $self->{logging};
+    my $self    = shift;
+    my $message = shift;
+    return unless $self->{logging};
 
-  if ( is_coderef($self->{logging}) ){
-      my $lc = $self->{logging};
-      &$lc("Geo::What3Words -- " . $message);
-  }
-  else {
-      print "Geo::What3Words -- " . $message . "\n";
-  }
-  return;
+    if (is_coderef($self->{logging})) {
+        my $lc = $self->{logging};
+        &$lc("Geo::What3Words -- " . $message);
+    } else {
+        print "Geo::What3Words -- " . $message . "\n";
+    }
+    return;
 }
 
 =head1 INSTALLATION

@@ -12,7 +12,7 @@ use HTTP::Tiny;
 use Net::Ping;
 use Net::Ping::External;
 use Ref::Util qw( is_hashref is_coderef );
-use URI::XS;
+use URI;
 
 my $JSONXS = Cpanel::JSON::XS->new->allow_nonref(1);
 
@@ -99,7 +99,7 @@ sub ping {
 
     ## http://example.com/some/path => example.com
     ## also works with IP addresses
-    my $host = URI::XS->new($self->{api_endpoint})->host;
+    my $host = URI->new($self->{api_endpoint})->host;
 
     $self->_log("pinging $host...");
 
@@ -316,10 +316,8 @@ sub _query_remote_api {
         delete $rh_fields->{$key} if (!defined($rh_fields->{$key}));
     }
 
-    my $uri = URI::XS->new($self->{api_endpoint} . $method_name);
-    $uri->query($rh_fields);
-    # if we use URI then need query_form, not query
-    # $uri->query_form($rh_fields);
+    my $uri = URI->new($self->{api_endpoint} . $method_name);
+    $uri->query_form($rh_fields);
     my $url = $uri->as_string;
 
     $self->_log("GET $url");

@@ -13,6 +13,7 @@ use Net::Ping;
 use Net::Ping::External;
 use Ref::Util qw( is_hashref is_coderef );
 use URI;
+# DO NOT TRY TO USE URI::XS IT JUST LEADS TO PROBLEMS
 
 my $JSONXS = Cpanel::JSON::XS->new->allow_nonref(1);
 

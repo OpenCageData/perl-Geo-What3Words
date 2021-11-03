@@ -13,6 +13,7 @@ use Net::Ping;
 use Net::Ping::External;
 use Ref::Util qw( is_hashref is_coderef );
 use URI;
+use utf8;
 # DO NOT TRY TO USE URI::XS IT JUST LEADS TO PROBLEMS
 
 my $JSONXS = Cpanel::JSON::XS->new->allow_nonref(1);
@@ -49,7 +50,7 @@ an API key at https://developer.what3words.com
 
 =cut
 
-=method new
+=head2 new
 
 Creates a new instance. The api key is required.
 
@@ -86,7 +87,7 @@ sub new {
     return bless($self, $class);
 }
 
-=method ping
+=head2 ping
 
 Check if the remote server is available. This is helpful for debugging or
 testing, but too slow to run for every conversion.
@@ -112,7 +113,7 @@ sub ping {
     return $res;
 }
 
-=method words2pos
+=head2 words2pos
 
 Tiny wrapper around words_to_position.
 
@@ -135,7 +136,7 @@ sub words2pos {
 }
 
 
-=method pos2words
+=head2 pos2words
 
 Tiny wrapper around position_to_words.
 
@@ -160,7 +161,7 @@ sub pos2words {
     return;
 }
 
-=method valid_words_format
+=head2 valid_words_format
 
 Returns 1 if the string looks like three words, 0 otherwise. Does
 not call the remote API.
@@ -183,7 +184,7 @@ sub valid_words_format {
     return 0;
 }
 
-=method words_to_position
+=head2 words_to_position
 
 Returns a more verbose response than words2pos.
 
@@ -220,7 +221,7 @@ sub words_to_position {
 
 }
 
-=method position_to_words
+=head2 position_to_words
 
 Returns a more verbose response than pos2words.
 
@@ -264,7 +265,7 @@ sub position_to_words {
     );
 }
 
-=method get_languages
+=head2 get_languages
 
 Retuns a list of language codes and names.
 

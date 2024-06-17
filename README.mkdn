@@ -2,6 +2,10 @@
 
 Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API
 
+[![Build Tests](https://github.com/OpenCageData/perl-Geo-What3Words/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenCageData/perl-Geo-What3Words/actions/workflows/ci.yml)[![CPAN](https://img.shields.io/cpan/v/Geo-What3Words.svg?style=flat-square)](https://metacpan.org/pod/Geo::What3Words)
+![Mastodon Follow](https://img.shields.io/mastodon/follow/109287663468501769?domain=https%3A%2F%2Fen.osm.town%2F&style=social)
+
+
 # VERSION
 
 version 3.0.3

@@ -1,5 +1,8 @@
 Revision history for Perl module Geo::What3Words.
 
+3.0.3   2026-02-13
+        - improved pod, no code changes
+
 3.0.3   2021-03-13
         - rename perltidy conf files so Dist::Zilla adds them to distribution
         

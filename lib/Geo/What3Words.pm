@@ -19,52 +19,82 @@ use utf8;
 my $JSONXS = Cpanel::JSON::XS->new->allow_nonref(1);
 
 
+=encoding utf8
+
+=head1 SYNOPSIS
+
+  my $w3w = Geo::What3Words->new( key => 'your-api-key' );
+
+  $w3w->pos2words('51.484463,-0.195405');
+  # returns 'prom.cape.pump'
+
+  $w3w->pos2words('51.484463,-0.195405', 'ru');
+  # returns 'питомец.шутить.намеренно'
+
+  $w3w->words2pos('prom.cape.pump');
+  # returns '51.484463,-0.195405' (latitude,longitude)
+
 =head1 DESCRIPTION
 
-what3words (http://what3words.com/) divides the world into 57 trillion squares
-of 3 metres x 3 metres. Each square has been given a 3 word address comprised
-of 3 words from the dictionary.
+what3words (L<https://what3words.com/>) divides the world into 57 trillion
+squares of 3 metres x 3 metres. Each square has been given a 3 word address
+comprised of 3 words from the dictionary.
 
-This module calls API version 3 (https://docs.what3words.com/public-api/) 
-to convert coordinates into 3 word addresses (forward) and 3 
+This module calls API version 3 (L<https://docs.what3words.com/public-api/>)
+to convert coordinates into 3 word addresses (forward) and 3
 words into coordinates (reverse).
 
 Versions 1 and 2 are deprecated and are no longer supported.
 
-You need to sign up at http://what3words.com/login and then register for 
-an API key at https://developer.what3words.com
+You need to sign up at L<https://what3words.com/login> and then register for
+an API key at L<https://developer.what3words.com>
 
-
-=head1 SYNOPSIS
-
-  my $w3w = Geo::What3Words->new();
-
-  $w3w->pos2words('51.484463,-0.195405');
-  # returns 'three.example.words'
-
-  $w3w->pos2words('51.484463,-0.195405', 'ru');
-  # returns 'три.пример.слова'
-
-  $w3w->words2pos('three.example.words');
-  # returns '51.484463,-0.195405' (latitude,longitude)
+=head1 METHODS
 
 =cut
 
 =head2 new
 
-Creates a new instance. The api key is required.
+Creates a new instance. The C<key> parameter is required.
 
   my $w3w = Geo::What3Words->new( key => 'your-api-key' );
   my $w3w = Geo::What3Words->new( key => 'your-api-key', language => 'ru' );
 
-For debugging you can either set logging or provide a callback.
+Options:
+
+=over 4
+
+=item key (required)
+
+Your what3words API key.
+
+=item language
+
+Default language for 3 word addresses (e.g. C<'ru'>, C<'de'>). Can be
+overridden per request.
+
+=item api_endpoint
+
+Override the API URL. Defaults to C<https://api.what3words.com/v3/>.
+
+=item ua
+
+Provide your own L<HTTP::Tiny> instance, e.g. for proxy configuration
+or testing.
+
+=item logging
+
+For debugging you can either set logging to a true value or provide a
+callback.
 
   my $w3w = Geo::What3Words->new( key => 'your-api-key', logging => 1 );
   # will print debugging output to STDOUT
 
   my $callback = sub { my $msg = shift; $my_log4perl_logger->info($msg) };
   my $w3w = Geo::What3Words->new( key => 'your-api-key', logging => $callback );
-  # will log with log4perl.
+  # will log with log4perl
+
+=back
 
 =cut
 
@@ -115,10 +145,11 @@ sub ping {
 
 =head2 words2pos
 
-Tiny wrapper around words_to_position.
+Convenience wrapper around C<words_to_position>. Takes a 3 word address
+string, returns a string C<'latitude,longitude'> or C<undef> on failure.
 
-  $w3w->words2pos('three.example.words');
-  # returns '51.484463,-0.195405' (latitude,longitude)
+  $w3w->words2pos('prom.cape.pump');
+  # returns '51.484463,-0.195405'
 
   $w3w->words2pos('does.not.exist');
   # returns undef
@@ -138,17 +169,18 @@ sub words2pos {
 
 =head2 pos2words
 
-Tiny wrapper around position_to_words.
+Convenience wrapper around C<position_to_words>. Takes a string
+C<'latitude,longitude'> and an optional language code. Returns a 3 word
+address string or C<undef> on failure.
 
-  $w3w->pos2words('51.484463,-0.195405'); # latitude,longitude
-  # returns 'three.example.words'
+  $w3w->pos2words('51.484463,-0.195405');
+  # returns 'prom.cape.pump'
 
   $w3w->pos2words('51.484463,-0.195405', 'ru');
-  # returns 'три.пример.слова'
+  # returns 'питомец.шутить.намеренно'
 
   $w3w->pos2words('invalid,coords');
   # returns undef
-
 
 =cut
 
@@ -163,11 +195,17 @@ sub pos2words {
 
 =head2 valid_words_format
 
-Returns 1 if the string looks like three words, 0 otherwise. Does
-not call the remote API.
+Returns 1 if the string looks like three dot-separated words, 0 otherwise.
+Supports Unicode (e.g. Cyrillic, Turkish). Does not call the remote API.
 
-  $w3w->valid_words_format('one.two.three');
+  $w3w->valid_words_format('prom.cape.pump');
   # returns 1
+
+  $w3w->valid_words_format('диета.новшество.компаньон');
+  # returns 1
+
+  $w3w->valid_words_format('Not.Valid.Format');
+  # returns 0 (uppercase letters)
 
 =cut
 
@@ -186,7 +224,9 @@ sub valid_words_format {
 
 =head2 words_to_position
 
-Returns a more verbose response than words2pos.
+Takes a 3 word address string and returns a hashref with coordinates,
+country, language, map link, nearest place, and bounding square.
+Returns C<undef> on failure.
 
   $w3w->words_to_position('prom.cape.pump');
   # {
@@ -223,9 +263,12 @@ sub words_to_position {
 
 =head2 position_to_words
 
-Returns a more verbose response than pos2words.
+Takes a string C<'latitude,longitude'> and an optional language code.
+Returns a hashref with coordinates, country, language, map link, nearest
+place, and bounding square. Returns C<undef> on failure.
 
-  $w3w->position_to_words('51.484463,-0.195405')
+  $w3w->position_to_words('51.484463,-0.195405');
+  $w3w->position_to_words('51.484463,-0.195405', 'ru');
 
   # {
   #        'coordinates' => {
@@ -267,7 +310,7 @@ sub position_to_words {
 
 =head2 get_languages
 
-Retuns a list of language codes and names.
+Returns a hashref containing a list of supported language codes and names.
 
   $w3w->get_languages();
   # {
@@ -296,6 +339,12 @@ sub get_languages {
     my $position = shift;
     return $self->_query_remote_api('available-languages');
 }
+
+=head2 oneword_available
+
+Deprecated. Calling this method will emit a warning and return C<undef>.
+
+=cut
 
 sub oneword_available {
     warn 'deprecated method: oneword_available';
@@ -352,13 +401,30 @@ sub _log {
     return;
 }
 
-=head1 INSTALLATION
+=head1 ERROR HANDLING
 
-The test suite will use pre-recorded API responses. If you suspect something
+On HTTP errors or invalid input the convenience methods (C<pos2words>,
+C<words2pos>) return C<undef>. The verbose methods (C<position_to_words>,
+C<words_to_position>, C<get_languages>) also return C<undef> on failure.
+
+In all cases a warning is emitted via C<warn> with the HTTP status code.
+You can catch these with C<$SIG{__WARN__}> or L<Test::Warn> in tests.
+
+=head1 TESTING
+
+The test suite uses pre-recorded API responses. If you suspect something
 changed in the API you can force the test suite to use live requests with
-your API key
+your API key:
 
-    PERLLIB=./lib W3W_RECORD_REQUESTS=1 W3W_API_KEY=<your key> perl t/base.t
+    W3W_API_KEY=<your key> prove -l t/base.t
+
+=head1 SEE ALSO
+
+L<https://what3words.com/> - what3words website
+
+L<https://developer.what3words.com> - API documentation and key registration
+
+L<https://developer.what3words.com/public-api/docs> - API v3 reference
 
 =cut
 

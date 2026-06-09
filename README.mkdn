@@ -56,7 +56,9 @@ Options:
 
 - api\_endpoint
 
-    Override the API URL. Defaults to `https://api.what3words.com/v3/`.
+    Override the API URL. Defaults to `https://api.what3words.com/v3/`. Useful when testing self-hosted installations.
+    Warning: Set the value carefully, and not from user-supplied-data, otherwise obviously all data including API key
+    could be sent to an untrusted endpoint.
 
 - ua
 

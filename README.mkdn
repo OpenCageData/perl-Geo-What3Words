@@ -6,6 +6,12 @@ Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-vers
 
 version 3.0.4
 
+# Build status
+
+[![Build Tests](https://github.com/OpenCageData/perl-Geo-What3Words/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenCageData/perl-Geo-What3Words/actions/workflows/ci.yml)[![CPAN](https://img.shields.io/cpan/v/Geo-What3Words.svg?style=flat-square)](https://metacpan.org/pod/Geo::What3Words)
+[![Coverage Status](https://coveralls.io/repos/github/OpenCageData/perl-Geo-What3Words/badge.svg?branch=master)](https://coveralls.io/github/OpenCageData/perl-Geo-What3Words?branch=master)
+![Mastodon Follow](https://img.shields.io/mastodon/follow/109287663468501769?domain=https%3A%2F%2Fen.osm.town%2F&style=social)
+
 # SYNOPSIS
 
     my $w3w = Geo::What3Words->new( key => 'your-api-key' );

@@ -4,13 +4,7 @@ Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-vers
 
 # VERSION
 
-version 3.0.4
-
-# Build status
-
-[![Build Tests](https://github.com/OpenCageData/perl-Geo-What3Words/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenCageData/perl-Geo-What3Words/actions/workflows/ci.yml)[![CPAN](https://img.shields.io/cpan/v/Geo-What3Words.svg?style=flat-square)](https://metacpan.org/pod/Geo::What3Words)
-[![Coverage Status](https://coveralls.io/repos/github/OpenCageData/perl-Geo-What3Words/badge.svg?branch=master)](https://coveralls.io/github/OpenCageData/perl-Geo-What3Words?branch=master)
-![Mastodon Follow](https://img.shields.io/mastodon/follow/109287663468501769?domain=https%3A%2F%2Fen.osm.town%2F&style=social)
+version 3.0.5
 
 # SYNOPSIS
 
@@ -62,9 +56,7 @@ Options:
 
 - api\_endpoint
 
-    Override the API URL. Defaults to `https://api.what3words.com/v3/`. Useful when testing self-hosted installations.
-    Warning: Set the value carefully, and not from user-supplied-data, otherwise obviously all data including API key
-    could be sent to an untrusted endpoint.
+    Override the API URL. Defaults to `https://api.what3words.com/v3/`.
 
 - ua
 
@@ -82,6 +74,11 @@ Options:
         my $callback = sub { my $msg = shift; $my_log4perl_logger->info($msg) };
         my $w3w = Geo::What3Words->new( key => 'your-api-key', logging => $callback );
         # will log with log4perl
+
+Create one instance and reuse it for all your requests. [HTTP::Tiny](https://metacpan.org/pod/HTTP%3A%3ATiny)
+keeps the connection to the API open between requests, so only the
+first request pays for the TLS handshake. Creating a new instance per
+request loses that.
 
 ## ping
 
@@ -226,6 +223,11 @@ On HTTP errors or invalid input the convenience methods (`pos2words`,
 
 In all cases a warning is emitted via `warn` with the HTTP status code.
 You can catch these with `$SIG{__WARN__}` or [Test::Warn](https://metacpan.org/pod/Test%3A%3AWarn) in tests.
+
+Input that is clearly invalid is rejected before calling the API, also
+with a warning: a 3 word address that isn't three dot-separated words,
+or coordinates that aren't `'latitude,longitude'` with latitude between
+\-90 and 90 and longitude between -180 and 180.
 
 # TESTING
 

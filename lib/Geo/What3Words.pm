@@ -347,7 +347,6 @@ Returns a hashref containing a list of supported language codes and names.
 
 sub get_languages {
     my $self     = shift;
-    my $position = shift;
     return $self->_query_remote_api('available-languages');
 }
 

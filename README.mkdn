@@ -4,7 +4,7 @@ Geo::What3Words - turn WGS84 coordinates into three word addresses and vice-vers
 
 # VERSION
 
-version 3.0.5
+version 3.0.6
 
 # SYNOPSIS
 
@@ -57,6 +57,11 @@ Options:
 - api\_endpoint
 
     Override the API URL. Defaults to `https://api.what3words.com/v3/`.
+    Useful when testing self-hosted installations.
+
+    Warning: Set the value carefully, and not from user-supplied data,
+    otherwise all data including the API key could be sent to an untrusted
+    endpoint.
 
 - ua
 
@@ -211,6 +216,29 @@ Returns a hashref containing a list of supported language codes and names.
     #                      },
     # ...
 
+## error
+
+Returns details about why the last conversion or `get_languages` call
+failed, or `undef` if it succeeded.
+
+    my $words = $w3w->pos2words('51.484463,-0.195405');
+    if (!defined($words)) {
+        my $error = $w3w->error;
+        # {
+        #   status  => 401,
+        #   code    => 'InvalidKey',
+        #   message => 'Authentication failed; invalid API key'
+        # }
+    }
+
+`status` is the HTTP status code. `code` and `message` come from the
+API, see [https://developer.what3words.com/public-api/docs](https://developer.what3words.com/public-api/docs).
+
+If the input was rejected before calling the API `status` is `undef`
+and `code` is `BadWords` or `BadCoordinates`. If the API could not be
+reached `status` is `599`, `code` is `undef` and `message` is the
+error from [HTTP::Tiny](https://metacpan.org/pod/HTTP%3A%3ATiny).
+
 ## oneword\_available
 
 Deprecated. Calling this method will emit a warning and return `undef`.
@@ -224,6 +252,9 @@ On HTTP errors or invalid input the convenience methods (`pos2words`,
 In all cases a warning is emitted via `warn` with the HTTP status code.
 You can catch these with `$SIG{__WARN__}` or [Test::Warn](https://metacpan.org/pod/Test%3A%3AWarn) in tests.
 
+`error` returns the details of the last failure, including the error
+code and message from the API.
+
 Input that is clearly invalid is rejected before calling the API, also
 with a warning: a 3 word address that isn't three dot-separated words,
 or coordinates that aren't `'latitude,longitude'` with latitude between
@@ -236,6 +267,18 @@ changed in the API you can force the test suite to use live requests with
 your API key:
 
     W3W_API_KEY=<your key> prove -l t/base.t
+
+The recorded responses are in `t/data/responses`. To update them, run
+the tests against the live API with recording switched on. Your API key
+is not saved in the recorded responses.
+
+    W3W_API_KEY=<your key> W3W_RECORD=1 prove -l t/base.t
+
+Set `W3W_API_ENDPOINT` to run the live or recording tests against
+another server, e.g. a self-hosted installation.
+
+The code style tests only run with `AUTHOR_TESTING` set, as
+`dzil test --author` does.
 
 # SEE ALSO
 

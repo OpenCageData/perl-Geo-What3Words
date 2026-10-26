@@ -33,7 +33,7 @@ jobs:
           export tmpbuild=$(mktemp --directory)
           dzil build --in $tmpbuild
           cpanm --quiet --notest Devel::Cover::Report::Coveralls Perl::Critic
-          dzil listdeps | xargs cpanm
+          dzil listdeps --author | xargs cpanm
 
       - name: Dzil tests
         run: dzil test --author

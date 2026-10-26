@@ -1,9 +1,10 @@
 # ABSTRACT: turn WGS84 coordinates into three word addresses and vice-versa using what3words.com HTTPS API
 
-package Geo::What3Words;
-
 use strict;
 use warnings;
+
+package Geo::What3Words;
+
 use Cpanel::JSON::XS;
 use Encode qw( decode_utf8 );
 use HTTP::Tiny;
@@ -70,6 +71,11 @@ overridden per request.
 =item api_endpoint
 
 Override the API URL. Defaults to C<https://api.what3words.com/v3/>.
+Useful when testing self-hosted installations.
+
+Warning: Set the value carefully, and not from user-supplied data,
+otherwise all data including the API key could be sent to an untrusted
+endpoint.
 
 =item ua
 
@@ -261,7 +267,7 @@ sub words_to_position {
     ## lenient than valid_words_format so we never reject something
     ## the API might accept
     if (!defined($words) || $words !~ m/^[^.\s]+\.[^.\s]+\.[^.\s]+$/) {
-        return $self->_invalid_input('3 word address', $words);
+        return $self->_invalid_input('BadWords', '3 word address', $words);
     }
 
     return $self->_query_remote_api('convert-to-coordinates', {words => $words});
@@ -307,7 +313,7 @@ sub position_to_words {
     my $language = shift || $self->{language};
 
     if (!_valid_position($position)) {
-        return $self->_invalid_input('coordinates', $position);
+        return $self->_invalid_input('BadCoordinates', 'coordinates', $position);
     }
 
     # https://developer.what3words.com/public-api/docs#convert-to-3wa
@@ -346,8 +352,38 @@ Returns a hashref containing a list of supported language codes and names.
 =cut
 
 sub get_languages {
-    my $self     = shift;
+    my $self = shift;
     return $self->_query_remote_api('available-languages');
+}
+
+=head2 error
+
+Returns details about why the last conversion or C<get_languages> call
+failed, or C<undef> if it succeeded.
+
+  my $words = $w3w->pos2words('51.484463,-0.195405');
+  if (!defined($words)) {
+      my $error = $w3w->error;
+      # {
+      #   status  => 401,
+      #   code    => 'InvalidKey',
+      #   message => 'Authentication failed; invalid API key'
+      # }
+  }
+
+C<status> is the HTTP status code. C<code> and C<message> come from the
+API, see L<https://developer.what3words.com/public-api/docs>.
+
+If the input was rejected before calling the API C<status> is C<undef>
+and C<code> is C<BadWords> or C<BadCoordinates>. If the API could not be
+reached C<status> is C<599>, C<code> is C<undef> and C<message> is the
+error from L<HTTP::Tiny>.
+
+=cut
+
+sub error {
+    my $self = shift;
+    return $self->{error};
 }
 
 =head2 oneword_available
@@ -366,6 +402,8 @@ sub _query_remote_api {
     my $method_name = shift;
     my $rh_params   = shift || {};
 
+    $self->{error} = undef;
+
     my $rh_fields = {
         #a      => 1,
         key    => $self->{key},
@@ -380,12 +418,16 @@ sub _query_remote_api {
     ## class method, $self->{ua} might not be an HTTP::Tiny
     my $url = $self->{api_endpoint} . $method_name . '?' . HTTP::Tiny->www_form_urlencode($rh_fields);
 
-    $self->_log("GET $url");
+    ## never show the API key in warnings or logs
+    (my $safe_url = $url) =~ s/([?&]key=)[^&]*/${1}XXXX/;
+
+    $self->_log("GET $safe_url");
     my $response = $self->{ua}->get($url);
 
     if (!$response->{success}) {
-        warn "got failed response from $url: " . $response->{status};
-        $self->_log("got failed response from $url: " . $response->{status});
+        warn "got failed response from $safe_url: " . $response->{status};
+        $self->_log("got failed response from $safe_url: " . $response->{status});
+        $self->{error} = _error_from_response($response);
         return;
     }
 
@@ -408,12 +450,31 @@ sub _valid_position {
     return 1;
 }
 
+## the API sends errors as {"error":{"code":...,"message":...}}, but
+## e.g. connection failures (status 599) come from HTTP::Tiny as text
+sub _error_from_response {
+    my $response = shift;
+
+    my $error = {status => $response->{status}, code => undef, message => $response->{reason}};
+
+    my $body = eval { $JSONXS->decode($response->{content}) };
+    if (is_hashref($body) && is_hashref($body->{error})) {
+        $error->{code}    = $body->{error}->{code};
+        $error->{message} = $body->{error}->{message};
+    } elsif ($response->{status} == 599 && defined($response->{content})) {
+        $error->{message} = $response->{content};
+    }
+    return $error;
+}
+
 sub _invalid_input {
     my $self  = shift;
+    my $code  = shift;
     my $what  = shift;
     my $input = shift;
 
     my $msg = "invalid $what: " . (defined($input) ? "'$input'" : 'undef') . ', not calling API';
+    $self->{error} = {status => undef, code => $code, message => $msg};
     warn $msg;
     $self->_log($msg);
     return;
@@ -453,6 +514,9 @@ C<words_to_position>, C<get_languages>) also return C<undef> on failure.
 In all cases a warning is emitted via C<warn> with the HTTP status code.
 You can catch these with C<$SIG{__WARN__}> or L<Test::Warn> in tests.
 
+C<error> returns the details of the last failure, including the error
+code and message from the API.
+
 Input that is clearly invalid is rejected before calling the API, also
 with a warning: a 3 word address that isn't three dot-separated words,
 or coordinates that aren't C<'latitude,longitude'> with latitude between
@@ -465,6 +529,18 @@ changed in the API you can force the test suite to use live requests with
 your API key:
 
     W3W_API_KEY=<your key> prove -l t/base.t
+
+The recorded responses are in F<t/data/responses>. To update them, run
+the tests against the live API with recording switched on. Your API key
+is not saved in the recorded responses.
+
+    W3W_API_KEY=<your key> W3W_RECORD=1 prove -l t/base.t
+
+Set C<W3W_API_ENDPOINT> to run the live or recording tests against
+another server, e.g. a self-hosted installation.
+
+The code style tests only run with C<AUTHOR_TESTING> set, as
+C<dzil test --author> does.
 
 =head1 SEE ALSO
 

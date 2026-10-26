@@ -4,6 +4,7 @@ use Test::More;
 use Test::Exception;
 use Test::Warn;
 use Data::Dumper;
+use Encode     ();
 use List::Util qw(first);
 
 use utf8; # this file is written in utf8
@@ -56,6 +57,94 @@ dies_ok {
         1, 'valid_words_format - valid Russian utf8');
     is($w3w->valid_words_format('Mосква.def.ghi'), 0, 'valid_words_format - not all lowercase utf8');
 }
+
+## Net::Ping is only loaded when calling ping()
+##
+ok(!exists($INC{'Net/Ping.pm'}), 'Net::Ping not loaded on startup');
+
+## Fake user agent, records requested URLs and returns a canned response
+##
+{
+
+    package FakeUA;
+    sub new   { my ($class, $content) = @_; return bless {content => $content, urls => []}, $class }
+    sub agent { }
+
+    sub get {
+        my ($self, $url) = @_;
+        push @{$self->{urls}}, $url;
+        return {success => 1, status => 200, content => $self->{content}};
+    }
+}
+
+## Request building and response decoding, no HTTP API access
+##
+{
+    ## raw UTF-8 bytes, like HTTP::Tiny returns them
+    my $content
+        = '{"words":"' . Encode::encode_utf8('диета.новшество.компаньон') . '","language":"ru"}';
+    my $fake_ua = FakeUA->new($content);
+    my $w3w     = Geo::What3Words->new(key => 'abc', ua => $fake_ua, logging => $logging_callback);
+
+    is( $w3w->pos2words('51.484463,-0.195405', 'ru'),
+        'диета.новшество.компаньон',
+        'pos2words - decodes utf8'
+    );
+    is( $fake_ua->{urls}->[0],
+        'https://api.what3words.com/v3/convert-to-3wa?coordinates=51.484463%2C-0.195405&format=json&key=abc&language=ru',
+        'pos2words - request url'
+    );
+
+    $w3w->position_to_words('51.484463,-0.195405');
+    unlike($fake_ua->{urls}->[1], qr/language/, 'position_to_words - no language parameter if not set');
+
+    $w3w->words_to_position('prom.cape.pump');
+    like(
+        $fake_ua->{urls}->[2],
+        qr{/convert-to-coordinates\?format=json&key=abc&words=prom\.cape\.pump$},
+        'words_to_position - request url'
+    );
+
+    $w3w->words_to_position('///Index.Home.Raft');
+    is(scalar(@{$fake_ua->{urls}}), 4, 'words_to_position - lenient check passes on input valid_words_format rejects');
+}
+
+## Invalid input is rejected without calling the HTTP API
+##
+{
+    my $fake_ua = FakeUA->new('{}');
+    my $w3w     = Geo::What3Words->new(key => 'abc', ua => $fake_ua, logging => $logging_callback);
+
+    foreach my $words (undef, '', 'abc.def', 'abc.def.ghi.jkl', 'abc..ghi', 'abc def.ghi.jkl') {
+        my $label = defined($words) ? "'$words'" : 'undef';
+        warning_like {
+            is($w3w->words_to_position($words), undef, "words_to_position - invalid $label");
+        }
+        qr/invalid 3 word address/, "words_to_position - warning for $label";
+    }
+
+    foreach my $position (undef, '', 'invalid,coords', '1', '1,2,3', '91,0', '0,181', '-90.1,0') {
+        my $label = defined($position) ? "'$position'" : 'undef';
+        warning_like {
+            is($w3w->pos2words($position), undef, "pos2words - invalid $label");
+        }
+        qr/invalid coordinates/, "pos2words - warning for $label";
+    }
+
+    is(scalar(@{$fake_ua->{urls}}), 0, 'invalid input - no API requests');
+
+    ## valid edge cases still reach the API
+    $w3w->position_to_words($_) for ('90,180', '-90,-180', ' 1.5 , -.5 ', '+1,2.');
+    is(scalar(@{$fake_ua->{urls}}), 4, 'position_to_words - valid edge cases call the API');
+}
+
+## Host extraction for ping()
+##
+is(Geo::What3Words::_host_from_url('https://api.what3words.com/v3/'), 'api.what3words.com', '_host_from_url - host');
+is(Geo::What3Words::_host_from_url('http://user:pw@127.0.0.1:8080/v3/'),
+    '127.0.0.1', '_host_from_url - ip, port and userinfo');
+is(Geo::What3Words::_host_from_url('http://[::1]:8080/v3/'), '::1', '_host_from_url - ipv6');
+is(Geo::What3Words::_host_from_url('not a url'),             undef, '_host_from_url - invalid');
 
 
 ## Invalid API key
